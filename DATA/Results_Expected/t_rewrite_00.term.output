@@ -1,0 +1,21 @@
+rewrite (
+  -> (
+    d (
+      t
+    )
+    AAA
+  )
+  || (
+    d (
+      t
+    )
+    d (
+      u
+    )
+    d (
+      t
+    )
+  )
+)
+rewrite ( -> ( d ( t ) AAA ) || ( d ( t ) d ( u ) d ( t ) ) ) 
+results ( || ( AAA d ( u ) d ( t ) ) || ( d ( t ) d ( u ) AAA ) ) 

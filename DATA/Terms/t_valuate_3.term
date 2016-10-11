@@ -1,0 +1,16 @@
+set (
+  'y 
+  Y 
+  set (
+    'x
+    XX ( 'y )
+    * ( 'y
+        'x
+         a ( set (
+              'y
+               YYY
+               b ( 'x ' x 'y ) )
+         )
+    )
+  )
+)

@@ -1,0 +1,5 @@
+test::replace::var (
+  f ( 'a b a g ( 'a 'a ) )
+  'a
+  %% ( 0 )
+)

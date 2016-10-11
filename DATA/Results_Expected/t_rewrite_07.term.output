@@ -1,0 +1,23 @@
+rewrite (
+  -> (
+    b
+    eff
+  )
+  -> (
+    t (
+      b
+    )
+    e (
+      a
+      10
+    )
+  )
+  u (
+    t (
+      b
+    )
+    b
+  )
+)
+rewrite ( -> ( b eff ) -> ( t ( b ) e ( a 10 ) ) u ( t ( b ) b ) ) 
+results ( u ( e ( a 10 ) b ) u ( t ( b ) eff ) u ( t ( eff ) b ) ) 

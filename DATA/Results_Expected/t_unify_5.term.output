@@ -1,0 +1,41 @@
+unify (
+  = (
+    'a
+    AA (
+      'b
+      'c
+    )
+  )
+  = (
+    'd
+    DD (
+      'a
+      'b
+      'c
+    )
+  )
+  = (
+    W (
+      'b
+    )
+    W (
+      g (
+        'e
+      )
+    )
+  )
+  = (
+    W (
+      'b
+      'c
+    )
+    W (
+      g (
+        'e
+      )
+      'b
+    )
+  )
+)
+unify ( = ( 'a AA ( 'b 'c ) ) = ( 'd DD ( 'a 'b 'c ) ) = ( W ( 'b ) W ( g ( 'e ) ) ) = ( W ( 'b 'c ) W ( g ( 'e ) 'b ) ) ) 
+solution ( val ( 'a AA ( g ( 'e ) g ( 'e ) ) ) val ( 'd DD ( AA ( g ( 'e ) g ( 'e ) ) g ( 'e ) g ( 'e ) ) ) val ( 'b g ( 'e ) ) val ( 'c g ( 'e ) ) ) 

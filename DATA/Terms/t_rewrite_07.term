@@ -1,0 +1,5 @@
+rewrite (
+ -> ( b eff )
+ -> ( t ( b ) e ( a 10 ) )
+ u ( t ( b ) b )
+) 

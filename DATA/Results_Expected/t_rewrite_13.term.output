@@ -1,0 +1,21 @@
+rewrite (
+  -> (
+    d (
+      'a
+    )
+    W (
+      'a
+      'b
+    )
+  )
+  [] (
+    d (
+      t
+    )
+    d (
+      u
+    )
+  )
+)
+rewrite ( -> ( d ( 'a ) W ( 'a 'b ) ) [] ( d ( t ) d ( u ) ) ) 
+results ( [] ( W ( t 'b ) d ( u ) ) [] ( d ( t ) W ( u 'b ) ) ) 

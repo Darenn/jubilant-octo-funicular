@@ -1,0 +1,7 @@
+rewrite (
+  -> ( d(t) AAA )
+  || ( d ( t )
+       d ( u )
+       d ( t )
+  )
+)

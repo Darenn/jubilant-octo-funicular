@@ -1,0 +1,8 @@
+rewrite (
+  -> ( d ( 'a h ( 'b 'a ) ) YES ( 'a 'b ) )
+  -> ( d ( 'a h ( 'b 'b ) ) OUI ( 'a 'b ) )
+  TEST (
+     d ( t ( r ) h ( * t ( r ) ) )
+     d ( t h ( u u ) )
+  )
+) 

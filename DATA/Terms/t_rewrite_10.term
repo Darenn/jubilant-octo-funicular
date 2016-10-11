@@ -1,0 +1,4 @@
+rewrite (
+  -> ( d ('a) W ( 'a 'b ) )
+  t ( d( TT ) )
+)

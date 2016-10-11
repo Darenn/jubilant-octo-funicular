@@ -1,0 +1,14 @@
+set (
+  'a 
+  A ( 'b 'b )
+  set (
+    'b
+    B ( 'c 'c )
+    set (
+      'c
+      C ( 'd 'd )
+      set (
+        'd
+        D
+	'a
+)))

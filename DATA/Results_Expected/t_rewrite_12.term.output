@@ -1,0 +1,28 @@
+rewrite (
+  -> (
+    d (
+      'a
+      'a
+    )
+    W (
+      SAME
+    )
+  )
+  t (
+    d (
+      TT
+      UU
+    )
+    d (
+      TT
+      TT
+    )
+    d (
+      TT
+      TT
+      TT
+    )
+  )
+)
+rewrite ( -> ( d ( 'a 'a ) W ( SAME ) ) t ( d ( TT UU ) d ( TT TT ) d ( TT TT TT ) ) ) 
+results ( t ( d ( TT UU ) W ( SAME ) d ( TT TT TT ) ) ) 

@@ -1,0 +1,4 @@
+rewrite (
+ -> ( t e( a  10 ) )
+ u ( t t t )
+)

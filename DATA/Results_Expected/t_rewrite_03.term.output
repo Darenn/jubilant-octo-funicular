@@ -1,0 +1,19 @@
+rewrite (
+  -> (
+    t
+    10
+  )
+  -> (
+    a (
+      t
+    )
+    a (
+      10
+    )
+  )
+  a (
+    t
+  )
+)
+rewrite ( -> ( t 10 ) -> ( a ( t ) a ( 10 ) ) a ( t ) ) 
+results ( a ( 10 ) ) 

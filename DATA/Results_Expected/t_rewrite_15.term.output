@@ -1,0 +1,33 @@
+rewrite (
+  -> (
+    d (
+      'a
+      h (
+        'a
+      )
+    )
+    YES (
+      'a
+    )
+  )
+  TEST (
+    d (
+      t (
+        r
+      )
+      h (
+        t (
+          r
+        )
+      )
+    )
+    d (
+      t
+      h (
+        u
+      )
+    )
+  )
+)
+rewrite ( -> ( d ( 'a h ( 'a ) ) YES ( 'a ) ) TEST ( d ( t ( r ) h ( t ( r ) ) ) d ( t h ( u ) ) ) ) 
+results ( TEST ( YES ( t ( r ) ) d ( t h ( u ) ) ) ) 

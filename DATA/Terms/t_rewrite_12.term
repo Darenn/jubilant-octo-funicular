@@ -1,0 +1,6 @@
+rewrite (
+  -> ( d ('a 'a) W ( SAME ) )
+  t ( d( TT UU )
+      d( TT TT ) 
+      d( TT TT TT ) )
+)

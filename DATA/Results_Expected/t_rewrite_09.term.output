@@ -1,0 +1,15 @@
+rewrite (
+  -> (
+    d (
+      'a
+    )
+    W
+  )
+  t (
+    d (
+      t
+    )
+  )
+)
+rewrite ( -> ( d ( 'a ) W ) t ( d ( t ) ) ) 
+results ( t ( W ) ) 

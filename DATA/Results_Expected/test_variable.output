@@ -1,0 +1,11 @@
+"'a" est un symbole de variable
+"azer" n'est pas un symbole de variable
+"'" n'est pas un symbole de variable
+"'a_1" est un symbole de variable
+"'1" n'est pas un symbole de variable
+"'_1" est un symbole de variable
+"'az°e" n'est pas un symbole de variable
+test::replace::var ( f ( 'a b a g ( 'a 'a ) ) 'a %% ( 0 ) ) 
+f ( %% ( 0 ) b a g ( %% ( 0 ) %% ( 0 ) ) ) 
+test::replace::var ( f ( 'a b a g ( 'a 'a ) ) 'a %% ( 'a ) ) 
+f ( %% ( 'a ) b a g ( %% ( 'a ) %% ( 'a ) ) ) 

@@ -1,0 +1,14 @@
+unify (
+  = (
+    z (
+      'a
+    )
+    u (
+      f (
+        r
+      )
+    )
+  )
+)
+unify ( = ( z ( 'a ) u ( f ( r ) ) ) ) 
+incompatible ( z ( 'a ) u ( f ( r ) ) ) 

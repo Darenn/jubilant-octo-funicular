@@ -1,0 +1,28 @@
+set (
+  'd
+  D
+  set (
+    'c
+    C (
+      'd
+      'd
+    )
+    set (
+      'b
+      B (
+        'c
+        'c
+      )
+      set (
+        'a
+        A (
+          'b
+          'b
+        )
+        'a
+      )
+    )
+  )
+)
+set ( 'd D set ( 'c C ( 'd 'd ) set ( 'b B ( 'c 'c ) set ( 'a A ( 'b 'b ) 'a ) ) ) ) 
+A ( B ( C ( D D ) C ( D D ) ) B ( C ( D D ) C ( D D ) ) ) 

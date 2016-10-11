@@ -1,0 +1,8 @@
+rewrite (
+  -> ( d ( t ) AAA )
+  -> ( d ( u ) BBB )
+  || ( d ( t )
+       d ( u )
+       d ( t )
+  )
+)

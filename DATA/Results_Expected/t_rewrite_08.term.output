@@ -1,0 +1,26 @@
+rewrite (
+  -> (
+    t (
+      b
+    )
+    e (
+      a
+      10
+    )
+  )
+  -> (
+    b
+    e (
+      10
+      a
+    )
+  )
+  u (
+    t (
+      b
+    )
+    b
+  )
+)
+rewrite ( -> ( t ( b ) e ( a 10 ) ) -> ( b e ( 10 a ) ) u ( t ( b ) b ) ) 
+results ( u ( e ( a 10 ) b ) u ( t ( b ) e ( 10 a ) ) u ( t ( e ( 10 a ) ) b ) ) 

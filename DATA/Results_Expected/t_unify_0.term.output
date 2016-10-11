@@ -1,0 +1,14 @@
+unify (
+  = (
+    z (
+      'a
+    )
+    z (
+      f (
+        r
+      )
+    )
+  )
+)
+unify ( = ( z ( 'a ) z ( f ( r ) ) ) ) 
+solution ( val ( 'a f ( r ) ) ) 

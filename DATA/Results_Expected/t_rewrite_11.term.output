@@ -1,0 +1,22 @@
+rewrite (
+  -> (
+    d (
+      'a
+      'b
+    )
+    W (
+      'b
+      'b
+      'a
+      'a
+    )
+  )
+  t (
+    d (
+      TT
+      UU
+    )
+  )
+)
+rewrite ( -> ( d ( 'a 'b ) W ( 'b 'b 'a 'a ) ) t ( d ( TT UU ) ) ) 
+results ( t ( W ( UU UU TT TT ) ) ) 

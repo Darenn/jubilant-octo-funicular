@@ -1,0 +1,36 @@
+unify (
+  = (
+    z (
+      'a
+    )
+    z (
+      f (
+        10
+      )
+    )
+  )
+  = (
+    W (
+      'b
+    )
+    W (
+      g (
+        'a
+      )
+    )
+  )
+  = (
+    W (
+      'b
+      'c
+    )
+    W (
+      g (
+        'a
+      )
+      'b
+    )
+  )
+)
+unify ( = ( z ( 'a ) z ( f ( 10 ) ) ) = ( W ( 'b ) W ( g ( 'a ) ) ) = ( W ( 'b 'c ) W ( g ( 'a ) 'b ) ) ) 
+solution ( val ( 'a f ( 10 ) ) val ( 'b g ( f ( 10 ) ) ) val ( 'c g ( f ( 10 ) ) ) ) 

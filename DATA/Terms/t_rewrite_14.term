@@ -1,0 +1,10 @@
+rewrite (
+  -> ( d ( 'a 'a ) YES )
+  TEST (
+     d ( t )
+     d ( u u ) 
+     d ( u v ) 
+     d ( f ( " # ) f ( " # ) ) 
+     d ( f ( " # ) f ( # " ) ) 
+  )
+) 

@@ -1,0 +1,44 @@
+rewrite (
+  -> (
+    d (
+      'a
+      'a
+    )
+    YES
+  )
+  TEST (
+    d (
+      t
+    )
+    d (
+      u
+      u
+    )
+    d (
+      u
+      v
+    )
+    d (
+      f (
+        "
+        #
+      )
+      f (
+        "
+        #
+      )
+    )
+    d (
+      f (
+        "
+        #
+      )
+      f (
+        #
+        "
+      )
+    )
+  )
+)
+rewrite ( -> ( d ( 'a 'a ) YES ) TEST ( d ( t ) d ( u u ) d ( u v ) d ( f ( " # ) f ( " # ) ) d ( f ( " # ) f ( # " ) ) ) ) 
+results ( TEST ( d ( t ) YES d ( u v ) d ( f ( " # ) f ( " # ) ) d ( f ( " # ) f ( # " ) ) ) TEST ( d ( t ) d ( u u ) d ( u v ) YES d ( f ( " # ) f ( # " ) ) ) ) 

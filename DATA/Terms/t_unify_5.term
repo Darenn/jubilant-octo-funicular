@@ -1,0 +1,6 @@
+unify (
+= ( 'a AA ( 'b 'c ) )
+= ( 'd DD ( 'a 'b 'c ) ) 
+= ( W ( 'b ) W ( g ( 'e ) ) )
+= ( W ( 'b 'c ) W ( g ( 'e ) 'b ) )
+)
