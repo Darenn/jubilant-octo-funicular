@@ -37,15 +37,19 @@ sstring sstring_create_empty(void) {
 }
 
 sstring sstring_create_string(char const *st) {
-  assert(st != NULL);
-  sstring ch = (sstring)malloc(sizeof(struct sstring_struct));
-  assert(ch != NULL);
-  ch->length = strlen(st);
-  ch->chars = (char *)malloc(sizeof(char) * (ch->length));
-  for (int i = 0; (unsigned)i < ch->length; i++) {
-    ch->chars[i] = st[i];
+
+  if (strlen(st) < 1)
+    return sstring_create_empty();
+  else {
+    sstring ch = (sstring)malloc(sizeof(struct sstring_struct));
+    assert(ch != NULL);
+    ch->length = strlen(st);
+    ch->chars = (char *)malloc(sizeof(char) * (ch->length));
+    for (int i = 0; (unsigned)i < ch->length; i++) {
+      ch->chars[i] = st[i];
+    }
+    return ch;
   }
-  return ch;
 }
 
 void sstring_destroy(sstring *ss) {
@@ -68,13 +72,13 @@ void sstring_print(sstring ss, FILE *f) {
 }
 
 void sstring_concatenate(sstring ss1, sstring ss2) {
-  if (ss1->chars == NULL) {
+  if (sstring_is_empty(ss1) && !sstring_is_empty(ss2)) {
     ss1->length = ss2->length;
     ss1->chars = (char *)malloc(sizeof(char) * (ss1->length));
     for (unsigned int i = 0; i < ss1->length; i++) {
       ss1->chars[i] = ss2->chars[i];
     }
-  } else {
+  } else if (!sstring_is_empty(ss1)) {
     int lengthss1 = sstring_get_length(ss1),
         lengthss2 = sstring_get_length(ss2), i;
     ss1->chars =
@@ -108,13 +112,26 @@ int sstring_compare(sstring ss1, sstring ss2) {
   ASSERT_SSTRING_OK(ss1);
   ASSERT_SSTRING_OK(ss2);
   int i = 0;
-  do {
-    if (ss1->chars[i] != ss2->chars[i]) {
-      return 0;
-    }
-    i++;
-  } while (((unsigned)i != ss1->length) || ((unsigned)i != ss2->length));
-  return 1;
+  if (!sstring_is_empty(ss1) && !sstring_is_empty(ss2)) {
+    do {
+      if ((ss1->chars[i] > ss2->chars[i]) &&
+          (ss1->chars[i] != ss2->chars[i] + 32)) {
+        return 1;
+      } else if ((ss1->chars[i] < ss2->chars[i]) &&
+                 (ss1->chars[i] != ss2->chars[i] - 32)) {
+        return -1;
+      }
+      i++;
+    } while (i < sstring_get_length(ss1) || i < sstring_get_length(ss2));
+
+    return 0;
+  } else if (sstring_is_empty(ss1) && !sstring_is_empty(ss2)) {
+    return -1;
+  } else if (sstring_is_empty(ss2) && !sstring_is_empty(ss1)) {
+    return 1;
+  } else {
+    return 0;
+  }
 }
 
 int sstring_get_length(sstring ss) {
@@ -126,13 +143,11 @@ int sstring_get_char(sstring ss, int i) { return ss->chars[i]; }
 
 bool sstring_is_integer(sstring ss, int *n_pt) {
   ASSERT_SSTRING_OK(ss);
+  bool is_digit = false;
   for (int i = 0; i < sstring_get_length(ss); i++) {
-    if (isdigit(ss->chars[i])) {
-      *n_pt = ss->chars[i] - '0';
-      return true;
-    } else {
-      return false;
-    }
+    is_digit = isdigit(ss->chars[i]);
   }
-  return false;
+  if (is_digit)
+    *n_pt = atoi(ss->chars);
+  return is_digit;
 }
