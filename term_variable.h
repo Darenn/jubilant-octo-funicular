@@ -1,10 +1,9 @@
-# ifndef __TERM_VARIABLE_H
-# define __TERM_VARIABLE_H
+#ifndef __TERM_VARIABLE_H
+#define __TERM_VARIABLE_H
 
-# include <stdio.h>
+#include <stdio.h>
 
-# include "term.h"
-
+#include "term.h"
 
 /*! \file
  * \brief This module is used to deal with specials terms : variable
@@ -35,9 +34,7 @@
  * \post it is asserted that if it is a variable, then the arity is 0
  * \return true if the term is a variable.
  */
-extern bool term_is_variable ( term t ) ;
-
-
+extern bool term_is_variable(term t);
 
 /*!
  * Replace all occurence of a variable by its value.
@@ -46,10 +43,6 @@ extern bool term_is_variable ( term t ) ;
  * \pre variable is a legal name of variable
  * \pre t and value are correct
  */
-extern void term_replace_variable ( term t ,
-				    sstring variable ,
-				    term value ) ;
+extern void term_replace_variable(term t, sstring variable, term value);
 
-
-
-# endif
+#endif
