@@ -124,4 +124,15 @@ int sstring_get_length(sstring ss) {
 
 int sstring_get_char(sstring ss, int i) { return ss->chars[i]; }
 
-bool sstring_is_integer(sstring ss, int *n_pt) { return false; }
+bool sstring_is_integer(sstring ss, int *n_pt) {
+  ASSERT_SSTRING_OK(ss);
+  for (int i = 0; i < sstring_get_length(ss); i++) {
+    if (isdigit(ss->chars[i])) {
+      *n_pt = ss->chars[i] - '0';
+      return true;
+    } else {
+      return false;
+    }
+  }
+  return false;
+}
