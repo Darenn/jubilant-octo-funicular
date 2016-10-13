@@ -1,0 +1,23 @@
+---------------
+"roudoudou"
+"roudoudou"
+length ( ss1 ) = 9
+first and last char of ( ss1 ) = 'r' and 'u'
+---------------
+"unfzer_5	df"
+"unfzer_5	df"
+ERROR: "roudoudou" <=> "unfzer_5	df" = 0 should be -1
+ERROR: "unfzer_5	df" <=> "roudoudou" = 0 should be 1
+ERROR: "roudoudou" <=> "roudoudou" = 1 should be 0
+ss1.ss2 = "roudoudouunfzer_5	df"
+ss2.ss1 = "unfzer_5	dfroudoudouunfzer_5	df"
+ss2.ss3 = "unfzer_5	dfroudoudouunfzer_5	df"
+ss3.ss2 = "unfzer_5	dfroudoudouunfzer_5	df"
+---------------
+"roudoudou"
+"roudoudou"
+length ( ss1 ) = 9
+first and last char of ( ss1 ) = 'r' and 'u'
+---------------
+""
+"

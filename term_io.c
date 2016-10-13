@@ -10,8 +10,8 @@
  */
 static inline void skip_space(FILE *in) {
   char c;
-  while ((EOF != (c = getc(in))) && (isspace(c)))
-    ;
+  while ((EOF != (c = getc(in))) && (isspace(c))) {
+  };
   ungetc(c, in);
 }
 
@@ -25,7 +25,29 @@ static inline void skip_space(FILE *in) {
  * length.
  * if next non space char is '(' then it scans arguments.
  */
-term term_scan(FILE *in) { return NULL; }
+term term_scan(FILE *in) {
+  assert(in != NULL);
+  // Create char* to store symbol
+  char symbol[SYMBOL_STRING_LENGHT_BASE];
+  char c;
+  int i;
+  fgets(symbol, SYMBOL_STRING_LENGHT_BASE, in);
+  term t = term_create(sstring_create_string(symbol));
+  while (EOF != (c = getc(in))) {
+    i = 0;
+    while (!isspace(c)) {
+      symbol[i++] = c;
+    }
+    symbol[i] = 0;
+    if (symbol[0] == ')') {
+      t = term_get_father(t);
+    } else if (symbol[0] != '(') {
+      term_add_argument_last(t, term_create(sstring_create_string(symbol)));
+    }
+    skip_space(in);
+  }
+  return t;
+}
 
 /*!
  * To add spaces to a stream.
@@ -45,7 +67,19 @@ static inline void add_space_prefix(int n, FILE *out) {
  * \param depth nesting inside the main term. It is used to handle indentation.
  */
 static void term_print_expanded_rec(term const t, FILE *const out,
-                                    int const depth) {}
+                                    int const depth) {
+  add_space_prefix(depth, out);
+  sstring_print(term_get_symbol(t), out);
+  if (term_get_arity(t)) {
+    fprintf(out, " (\n");
+    for (int i = 0; i < term_get_arity(t); i++) {
+      term_print_expanded_rec(term_get_argument(t, i), out, depth + 1);
+    }
+    add_space_prefix(depth, out);
+    fprintf(out, ")");
+  }
+  fprintf(out, "\n");
+}
 
 void term_print_expanded(term t, FILE *out) {
   assert(NULL != t);
@@ -58,7 +92,17 @@ void term_print_expanded(term t, FILE *out) {
  * \param t (sub-)term to print
  * \param out output stream to print to.
  */
-static void term_print_compact_rec(term const t, FILE *const out) {}
+static void term_print_compact_rec(term const t, FILE *const out) {
+  sstring_print(term_get_symbol(t), out);
+  if (term_get_arity(t)) {
+    fprintf(out, " ( ");
+    for (int i = 0; i < term_get_arity(t); i++) {
+      term_print_compact_rec(term_get_argument(t, i), out);
+    }
+    fprintf(out, " )");
+  }
+  fprintf(out, " ");
+}
 
 void term_print_compact(term t, FILE *out) {
   assert(NULL != t);

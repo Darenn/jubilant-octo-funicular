@@ -1,15 +1,15 @@
-# ifndef __TERM_IO_H
-# define __TERM_IO_H
+#ifndef __TERM_IO_H
+#define __TERM_IO_H
 
-# include <stdio.h>
+#include <stdio.h>
 
-# include "term.h"
-
+#include "term.h"
 
 /*! \file
  * \brief This module provide I/O function for terms.
  *
- * All terms are read and written as these examples with any addition of space (or suppression around parenthesis):
+ * All terms are read and written as these examples with any addition of space
+ * (or suppression around parenthesis):
  * \li x
  * \li f ( x )
  * \li T ( f ( x ) f ( x ) )
@@ -28,8 +28,7 @@
  * \pre \c in is non NULL.
  * \return read term.
  */
-extern term term_scan ( FILE * in ) ;
-
+extern term term_scan(FILE *in);
 
 /*!
  * Print a term on a stream.
@@ -48,9 +47,7 @@ extern term term_scan ( FILE * in ) ;
  * \param out stream to print to.
  * \pre \c t and \c out are non NULL.
  */
-extern void term_print_expanded ( term t ,
-				  FILE * out ) ;
-
+extern void term_print_expanded(term t, FILE *out);
 
 /*!
  * Print a term on a stream.
@@ -60,8 +57,6 @@ extern void term_print_expanded ( term t ,
  * \param out stream to print to.
  * \pre \c t and \c out are non NULL.
  */
-extern void term_print_compact ( term t ,
-				 FILE * out ) ;
+extern void term_print_compact(term t, FILE *out);
 
-
-# endif
+#endif
