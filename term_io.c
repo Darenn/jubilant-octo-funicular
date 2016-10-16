@@ -29,19 +29,16 @@ term term_scan(FILE *in) {
   assert(in != NULL);
   // Create char* to store symbol
   char symbol[SYMBOL_STRING_LENGHT_BASE];
-  char c;
-  int i;
-  fgets(symbol, SYMBOL_STRING_LENGHT_BASE, in);
+  // First term
+  assert(fscanf(in, "%s", symbol) != EOF);
   term t = term_create(sstring_create_string(symbol));
-  while (EOF != (c = getc(in))) {
-    i = 0;
-    while (!isspace(c)) {
-      symbol[i++] = c;
-    }
-    symbol[i] = 0;
+  // Arguments
+  while (fscanf(in, "%s", symbol) != EOF) {
     if (symbol[0] == ')') {
       t = term_get_father(t);
-    } else if (symbol[0] != '(') {
+    } else if (symbol[0] == '(') {
+      t = term_get_argument(t, term_get_arity(t) - 1);
+    } else {
       term_add_argument_last(t, term_create(sstring_create_string(symbol)));
     }
     skip_space(in);
