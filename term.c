@@ -93,7 +93,7 @@ static void term_list_destroy(term_list *tl) {
       if ((*tl)->next != NULL) {
         (*tl)->next->previous = NULL;
       }
-      free(tl);
+      // free(tl);
       tl = next;
     }
     *tl = NULL;
@@ -132,9 +132,8 @@ static inline term_list term_add_argument(term t, term a) {
   assert(a != NULL);
   // Create term_list
   a->father = t;
-  t->arity += 1;
   term_list arg = term_list_create(a);
-  if (t->argument_last != NULL && t->argument_first != NULL) {
+  if (t->arity > 0) {
     arg->next = t->argument_first;
     arg->previous = t->argument_last;
     // Add term_list
@@ -143,8 +142,17 @@ static inline term_list term_add_argument(term t, term a) {
     arg->next = arg->previous = arg;
     t->argument_last = t->argument_first = arg;
   }
+  t->arity++;
   // Return arg
   return arg;
+}
+
+static inline term_list term_list_get(term t, int pos) {
+  term_list current = t->argument_first;
+  for (int i = 1; i <= pos; i++) {
+    current = current->next;
+  }
+  return current;
 }
 
 void term_add_argument_last(term t, term a) {
@@ -166,24 +174,21 @@ void term_add_argument_position(term t, term a, int pos) {
   assert(a != NULL);
   assert(pos >= 0);
   assert(pos <= t->arity);
-  a->father = t;
-  t->arity += 1;
   if (pos == 0) {
     term_add_argument_first(t, a);
   } else if (pos == t->arity) {
     term_add_argument_last(t, a);
   } else {
-    term_list current = t->argument_first;
-    for (int i = 1; i <= pos; i++) {
-      current = current->next;
-    }
+    a->father = t;
+    t->arity++;
+    term_list arg = term_list_get(t, pos);
     // Create term_list
-    term_list arg = term_list_create(a);
-    arg->next = current->next;
-    arg->previous = current;
+    term_list new_arg = term_list_create(a);
+    new_arg->next = arg->next;
+    new_arg->previous = arg;
     // Add term_list
-    current->next = arg;
-    current->next->previous = arg;
+    new_arg->previous->next = new_arg;
+    new_arg->next->previous = new_arg;
   }
 }
 
@@ -203,28 +208,37 @@ bool term_contains_symbol(term t, sstring symbol) {
   return false;
 }
 
-static inline term_list term_list_get(term t, int pos) {
+term term_get_argument(term t, int pos) {
   assert(t != NULL);
   assert(pos >= 0);
   assert(pos < t->arity);
-  term_list current = t->argument_first;
-  for (int i = 1; i < pos; i++) {
-    current = current->next;
+  // If no argument return NULL
+  if (t->arity == 0) {
+    return NULL;
   }
-  return current;
+  return term_list_get(t, pos)->t;
 }
 
-term term_get_argument(term t, int pos) { return term_list_get(t, pos)->t; }
-
 term term_extract_argument(term t, int pos) {
-  // Get term_list
+  assert(t != NULL);
+  assert(pos >= 0);
+  assert(pos < t->arity);
+  // If no argument return NULL
+  if (t->arity == 0) {
+    return NULL;
+  }
   term_list arg = term_list_get(t, pos);
-  arg->previous->next = arg->next;
-  arg->next->previous = arg->previous;
-  // Get term
+  if (t->arity >= 2) {
+    arg->next->previous = arg->previous;
+    arg->previous->next = arg->next;
+    t->arity--;
+  } else { // If is the last argument
+    t->argument_first = NULL;
+    t->argument_last = NULL;
+    t->arity = 0;
+  }
   term tr = term_copy(arg->t);
-  // Delete term_list
-  term_list_destroy(&arg);
+  // term_list_destroy(&arg);
   return tr;
 }
 
@@ -289,7 +303,7 @@ void term_argument_traversal_destroy(term_argument_traversal *tt) {
 
 bool term_argument_traversal_has_next(term_argument_traversal tt) {
   assert(tt != NULL);
-  return tt->tls != tt->tls->next;
+  return tt->tls != tt->tls->t->father->argument_last;
 }
 
 term term_argument_traversal_get_next(term_argument_traversal tt) {

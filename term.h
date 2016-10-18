@@ -68,7 +68,7 @@ extern void term_destroy(term *t);
 extern sstring term_get_symbol(term t);
 
 /*!
- * Return the symbol of a term.
+ * Return the arity of a term.
  * No side effect, can be used in assert.
  * \param t queried term.
  * \pre t is non NULL
