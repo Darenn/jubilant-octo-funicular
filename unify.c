@@ -22,35 +22,119 @@ static char const *const symbol_val = "val";
 /*! Symbol key-word for sting an incompatible term (no solution). */
 static char const *const symbol_incompatible = "incompatible";
 
+/*!
+* \brief Create a term, add leftTerm and rightTerm as arguments and return it.
+*/
 #define RETURN_TERM_WITH_TWO_ARGUMENTS(term_symbol, leftTerm, rightTerm)       \
   term t = term_create(sstring_create_string(term_symbol));                    \
   term_add_argument_first(t, rightTerm);                                       \
   term_add_argument_first(t, leftTerm);                                        \
   return t;
 
+/*!
+* \brief Create an incompatible term with terms given as arguments.
+* \param leftTerm The leftTerm of the incompatible term.
+* \param rightTerm The rightTerm of the incompatible term.
+* \return The term incompatible.
+*/
 static term term_create_imcompatible(const term leftTerm,
                                      const term rightTerm) {
   RETURN_TERM_WITH_TWO_ARGUMENTS(symbol_incompatible, leftTerm, rightTerm);
 }
 
+/*!
+* \brief Create a val term with the given terms.
+* \param variable The variable.
+* \param value The value of the variable.
+* \return A val term with value as argument of variable.
+*/
 static term term_create_val(const term variable, const term value) {
   RETURN_TERM_WITH_TWO_ARGUMENTS(symbol_val, variable, value);
 }
 
+/*!
+* \brief Create an equality with the given terms.
+* \param leftTerm The left term of the equality.
+* \param rightTerm The right term of the equality.
+* \return An equality with the given terms as arguments.
+*/
 static term term_create_equality(const term leftTerm, const term rightTerm) {
   RETURN_TERM_WITH_TWO_ARGUMENTS(symbol_equal, leftTerm, rightTerm);
 }
 
+/*!
+* \brief Set the result in the unify function with an incompatible term.
+*/
 #define SET_RES_INCOMPATIBLE(res, leftTerm, rightTerm, bool_incompatible)      \
   term_destroy(&res);                                                          \
   res = term_create_imcompatible(leftTerm, rightTerm);                         \
   bool_incompatible = true;
 
+/*!
+* \brief Make assertions to test if a term is a unify.
+*/
+#define TEST_TERM_IS_UNIFY(term)                                               \
+  sstring stringUnify = sstring_create_string(symbol_unify);                   \
+  assert(sstring_compare(term_get_symbol(t), stringUnify) == 0);               \
+  assert(term_get_arity(t) > 0);                                               \
+  sstring_destroy(&stringUnify);
+
+/*!
+* \brief Make assertions to test if a term is an equality.
+*/
+#define TEST_TERM_IS_EQUALITY(term)                                            \
+  sstring stringEquality = sstring_create_string(symbol_equal);                \
+  assert(!sstring_compare(term_get_symbol(equality), stringEquality));         \
+  assert(term_get_arity(equality) == 2);                                       \
+  sstring_destroy(&stringEquality);
+
+/*!
+* \brief Create equalities between each index corresponding arguments of both
+* terms and add these equalities as argument of the given sequence (term).
+*/
+#define CREATE_EQUALITIES_FOR_TERMS_AND_ADD_THEM_TO(termA, termB, sequence)    \
+  for (int i = 0; i < term_get_arity(termA); i++) {                            \
+    term tLeft = term_extract_argument(termA, i);                              \
+    term tRight = term_extract_argument(termB, i);                             \
+    term newEquality = term_create_equality(tLeft, tRight);                    \
+    term_add_argument_last(sequence, newEquality);                             \
+  }
+
+/*!
+* \brief Check if one of the term is contained in the other.
+* \param termA The first term.
+* \param termB The second term.
+* \return true if one the term is contained in the other, false otherwise.
+*/
+static bool one_term_contains_the_other(const term termA, const term termB) {
+  return term_contains_symbol(termA, term_get_symbol(termB)) ||
+         term_contains_symbol(termB, term_get_symbol(termA));
+}
+
+/*!
+* \brief Check which term is a variable, and return a term with the variable
+* symbol as symbol and the other term as argument
+* \param termA The first term.
+* \param termB The second term.
+* \pre Just one of the term is a variable.
+* \return The term with the variable symbol as symbol and the other terme as
+* argument.
+*/
+static term term_create_val_for_variable(term termA, term termB) {
+  term variable;
+  term value;
+  if (term_is_variable(termA)) {
+    variable = termA;
+    value = termB;
+  } else {
+    variable = termB;
+    value = termA;
+  }
+  return term_create_val(variable, value);
+}
+
 term term_unify(const term t) {
-  sstring stringUnify = sstring_create_string(symbol_unify);
-  sstring stringEquality = sstring_create_string(symbol_equal);
-  assert(sstring_compare(term_get_symbol(t), stringUnify) == 0);
-  assert(term_get_arity(t) > 0);
+  TEST_TERM_IS_UNIFY(t);
   term res = term_create(sstring_create_string(symbol_solution));
   term sequenceToUnify = term_copy(t);
   bool incompatible = false;
@@ -58,58 +142,40 @@ term term_unify(const term t) {
       term_argument_traversal_create(sequenceToUnify);
   while (term_argument_traversal_has_next(equalityTraversal) && !incompatible) {
     term equality = term_argument_traversal_get_next(equalityTraversal);
-    assert(!sstring_compare(term_get_symbol(equality), stringEquality));
-    assert(term_get_arity(equality) == 2);
+    TEST_TERM_IS_EQUALITY(equality);
     term leftTerm = term_get_argument(equality, 0);
     term rightTerm = term_get_argument(equality, 1);
-    sstring leftTermSymbol = term_get_symbol(leftTerm);
-    sstring rightTermSymbol = term_get_symbol(rightTerm);
     if (term_is_variable(leftTerm) || term_is_variable(rightTerm)) {
       if (term_compare(leftTerm, rightTerm) == 0) {
         // If terms are equals, it's obvioulsy true, continue to next equality
         continue;
-      } else if (term_contains_symbol(leftTerm, rightTermSymbol) ||
-                 term_contains_symbol(rightTerm, leftTermSymbol)) {
+      } else if (one_term_contains_the_other(leftTerm, rightTerm)) {
         // If the variable is contained into the other term, the equality is
         // incoherent, so it is incompatible
         SET_RES_INCOMPATIBLE(res, leftTerm, rightTerm, incompatible);
       } else { // term left not in term right and terms not equal
-        // So we get the value of this variable
-        term variable;
-        term value;
-        if (term_is_variable(leftTerm)) {
-          variable = leftTerm;
-          value = rightTerm;
-        } else {
-          variable = rightTerm;
-          value = leftTerm;
-        }
-        term tVal = term_create_val(variable, value);
-        // TODO Replace the variable by its value in equalities resolved and
-        // equalities remaining
-        // term_replace_copy(variable, )
-        term_add_argument_last(t, tVal);
+        // So we get the value of this variable and replace it
+        term tVal = term_create_val_for_variable(leftTerm, rightTerm);
+        term_replace_variable(sequenceToUnify, term_get_symbol(tVal),
+                              term_get_argument(tVal, 0));
+        term_replace_variable(res, term_get_symbol(tVal),
+                              term_get_argument(tVal, 0));
+        term_add_argument_last(sequenceToUnify, tVal);
       }
     } else { // No variables
-      if (sstring_compare(leftTermSymbol, rightTermSymbol) ||
+      if (sstring_compare(term_get_symbol(leftTerm),
+                          term_get_symbol(rightTerm)) ||
           term_get_arity(leftTerm) != term_get_arity(rightTerm)) {
         // If symbols different or arity different, it's incompatible
         SET_RES_INCOMPATIBLE(res, leftTerm, rightTerm, incompatible);
       } else {
         // Create an equality for each couple of arguments between both terms
         // and add it to the end of the term to unify
-        for (int i = 0; i < term_get_arity(leftTerm); i++) {
-          term tLeft = term_extract_argument(leftTerm, i);
-          term tRight = term_extract_argument(rightTerm, i);
-          term newEquality = term_create_equality(tLeft, tRight);
-          term_add_argument_last(sequenceToUnify, newEquality);
-        }
+        CREATE_EQUALITIES_FOR_TERMS_AND_ADD_THEM_TO(leftTerm, rightTerm,
+                                                    sequenceToUnify);
       }
     }
-    // Loop end
   }
   term_argument_traversal_destroy(&equalityTraversal);
-  sstring_destroy(&stringUnify);
-  sstring_destroy(&stringEquality);
   return res;
 }
