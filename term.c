@@ -82,22 +82,21 @@ term term_create(sstring symbol) {
 static void term_list_destroy(term_list *tl) {
   assert(tl != NULL);
   if (*tl != NULL) {
-    term_list current = *tl;
-    term_list next = NULL;
-    while (current != NULL) {
-      next = current->next;
-      term_destroy(&current->t);
-      free(current);
-      current = next;
-    }
+    term_destroy(&(*tl)->t);
+    free(*tl);
+    *tl = NULL;
   }
 }
 
 void term_destroy(term *t) {
   assert(t != NULL);
   if (*t != NULL) {
-    if ((*t)->arity > 0) {
-      term_list_destroy(&(*t)->argument_first);
+    term_list current = (*t)->argument_first;
+    term_list next = NULL;
+    while (current != NULL) {
+      next = current->next;
+      term_list_destroy(&current);
+      current = next;
     }
     sstring_destroy(&(*t)->symbol);
     free(*t);
@@ -250,7 +249,7 @@ term term_extract_argument(term t, int pos) {
     t->arity = 0;
   }
   term tr = term_copy(arg->t);
-  // term_list_destroy(&arg);
+  term_list_destroy(&arg);
   return tr;
 }
 
@@ -305,21 +304,8 @@ term_argument_traversal term_argument_traversal_create(term t) {
 void term_argument_traversal_destroy(term_argument_traversal *tt) {
   assert(tt != NULL);
   if (*tt != NULL) {
-    if ((*tt)->tls != NULL) {
-      term_list tl = (*tt)->tls;
-      term father = tl->t->father;
-      if (tl == father->argument_first) { // If is the first argument
-        tl->next->previous = NULL;
-        father->argument_first = tl->next;
-      } else if (tl == father->argument_last) { // If is the last argument
-        tl->previous->next = NULL;
-        father->argument_last = tl->previous;
-      } else {
-        tl->next->previous = tl->previous;
-        tl->previous->next = tl->next;
-      }
-      term_list_destroy(&tl);
-    }
+    term_list_destroy(&(*tt)->tls);
+    free(*tt);
   }
   *tt = NULL;
 }
