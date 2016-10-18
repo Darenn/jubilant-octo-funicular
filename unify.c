@@ -46,11 +46,28 @@ static term term_create_equality(const term leftTerm, const term rightTerm) {
   res = term_create_imcompatible(leftTerm, rightTerm);                         \
   bool_incompatible = true;
 
+#define TEST_TERM_IS_UNIFY(term)                                               \
+  sstring stringUnify = sstring_create_string(symbol_unify);                   \
+  assert(sstring_compare(term_get_symbol(t), stringUnify) == 0);               \
+  assert(term_get_arity(t) > 0);                                               \
+  sstring_destroy(&stringUnify);
+
+#define TEST_TERM_IS_EQUALITY(term)                                            \
+  sstring stringEquality = sstring_create_string(symbol_equal);                \
+  assert(!sstring_compare(term_get_symbol(equality), stringEquality));         \
+  assert(term_get_arity(equality) == 2);                                       \
+  sstring_destroy(&stringEquality);
+
+#define CREATE_EQUALITIES_FOR_TERMS_AND_ADD_THEM_TO(termA, termB, sequence)    \
+  for (int i = 0; i < term_get_arity(termA); i++) {                            \
+    term tLeft = term_extract_argument(termA, i);                              \
+    term tRight = term_extract_argument(termB, i);                             \
+    term newEquality = term_create_equality(tLeft, tRight);                    \
+    term_add_argument_last(sequence, newEquality);                             \
+  }
+
 term term_unify(const term t) {
-  sstring stringUnify = sstring_create_string(symbol_unify);
-  sstring stringEquality = sstring_create_string(symbol_equal);
-  assert(sstring_compare(term_get_symbol(t), stringUnify) == 0);
-  assert(term_get_arity(t) > 0);
+  TEST_TERM_IS_UNIFY(t);
   term res = term_create(sstring_create_string(symbol_solution));
   term sequenceToUnify = term_copy(t);
   bool incompatible = false;
@@ -58,8 +75,7 @@ term term_unify(const term t) {
       term_argument_traversal_create(sequenceToUnify);
   while (term_argument_traversal_has_next(equalityTraversal) && !incompatible) {
     term equality = term_argument_traversal_get_next(equalityTraversal);
-    assert(!sstring_compare(term_get_symbol(equality), stringEquality));
-    assert(term_get_arity(equality) == 2);
+    TEST_TERM_IS_EQUALITY(equality);
     term leftTerm = term_get_argument(equality, 0);
     term rightTerm = term_get_argument(equality, 1);
     sstring leftTermSymbol = term_get_symbol(leftTerm);
@@ -85,9 +101,10 @@ term term_unify(const term t) {
           value = leftTerm;
         }
         term tVal = term_create_val(variable, value);
-        // TODO Replace the variable by its value in equalities resolved and
-        // equalities remaining
-        // term_replace_copy(variable, )
+        term_replace_variable(sequenceToUnify, term_get_symbol(tVal),
+                              term_get_argument(tVal, 0));
+        term_replace_variable(res, term_get_symbol(tVal),
+                              term_get_argument(tVal, 0));
         term_add_argument_last(t, tVal);
       }
     } else { // No variables
@@ -98,18 +115,12 @@ term term_unify(const term t) {
       } else {
         // Create an equality for each couple of arguments between both terms
         // and add it to the end of the term to unify
-        for (int i = 0; i < term_get_arity(leftTerm); i++) {
-          term tLeft = term_extract_argument(leftTerm, i);
-          term tRight = term_extract_argument(rightTerm, i);
-          term newEquality = term_create_equality(tLeft, tRight);
-          term_add_argument_last(sequenceToUnify, newEquality);
-        }
+        CREATE_EQUALITIES_FOR_TERMS_AND_ADD_THEM_TO(leftTerm, rightTerm,
+                                                    sequenceToUnify);
       }
     }
     // Loop end
   }
   term_argument_traversal_destroy(&equalityTraversal);
-  sstring_destroy(&stringUnify);
-  sstring_destroy(&stringEquality);
   return res;
 }
