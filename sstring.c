@@ -139,7 +139,7 @@ int sstring_get_length(sstring ss) {
   return ss->length;
 }
 
-int sstring_get_char(sstring ss, int i) { return ss->chars[i]; }
+char sstring_get_char(sstring ss, int i) { return ss->chars[i]; }
 
 bool sstring_is_integer(sstring ss, int *n_pt) {
   ASSERT_SSTRING_OK(ss);
@@ -147,7 +147,8 @@ bool sstring_is_integer(sstring ss, int *n_pt) {
   for (int i = 0; i < sstring_get_length(ss); i++) {
     is_digit = isdigit(ss->chars[i]);
   }
-  if (is_digit)
+  if (is_digit) {
     *n_pt = atoi(ss->chars);
+  }
   return is_digit;
 }
