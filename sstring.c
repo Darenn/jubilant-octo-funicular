@@ -37,14 +37,14 @@ sstring sstring_create_empty(void) {
 }
 
 sstring sstring_create_string(char const *st) {
-
   if (strlen(st) < 1)
     return sstring_create_empty();
   else {
     sstring ch = (sstring)malloc(sizeof(struct sstring_struct));
     assert(ch != NULL);
     ch->length = strlen(st);
-    ch->chars = (char *)malloc(sizeof(char) * (ch->length));
+    ch->chars = (char *)malloc(sizeof(char) * strlen(st));
+    assert(ch->chars != NULL);
     for (int i = 0; (unsigned)i < ch->length; i++) {
       ch->chars[i] = st[i];
     }
@@ -148,7 +148,11 @@ bool sstring_is_integer(sstring ss, int *n_pt) {
     is_digit = isdigit(ss->chars[i]);
   }
   if (is_digit) {
-    *n_pt = atoi(ss->chars);
+    *n_pt = 0;
+    for (int i = 0; i < sstring_get_length(ss); i++) {
+      *n_pt = (ss->chars[i] - '0') + *n_pt * 10;
+      is_digit = isdigit(ss->chars[i]);
+    }
   }
   return is_digit;
 }
