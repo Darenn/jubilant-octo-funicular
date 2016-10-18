@@ -34,4 +34,6 @@
 
 test_term
 test_sstring
+test_unify
+
 DATA/Results/test_*

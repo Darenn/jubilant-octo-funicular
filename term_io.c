@@ -32,6 +32,7 @@ term term_scan(FILE *in) {
   // First term
   assert(fscanf(in, "%s", symbol) != EOF);
   term t = term_create(sstring_create_string(symbol));
+  fscanf(in, "%s", symbol); // Get first parenthese
   // Arguments
   while (fscanf(in, "%s", symbol) != EOF) {
     if (symbol[0] == ')') {
@@ -41,7 +42,6 @@ term term_scan(FILE *in) {
     } else {
       term_add_argument_last(t, term_create(sstring_create_string(symbol)));
     }
-    skip_space(in);
   }
   return t;
 }
@@ -65,6 +65,7 @@ static inline void add_space_prefix(int n, FILE *out) {
  */
 static void term_print_expanded_rec(term const t, FILE *const out,
                                     int const depth) {
+  assert(t != NULL);
   add_space_prefix(depth, out);
   sstring_print(term_get_symbol(t), out);
   if (term_get_arity(t)) {
@@ -90,15 +91,19 @@ void term_print_expanded(term t, FILE *out) {
  * \param out output stream to print to.
  */
 static void term_print_compact_rec(term const t, FILE *const out) {
+  assert(t != NULL);
   sstring_print(term_get_symbol(t), out);
   if (term_get_arity(t)) {
     fprintf(out, " ( ");
     for (int i = 0; i < term_get_arity(t); i++) {
-      term_print_compact_rec(term_get_argument(t, i), out);
+      term arg = term_get_argument(t, i);
+      if (arg != NULL) {
+        term_print_compact_rec(arg, out);
+        fprintf(out, " ");
+      }
     }
-    fprintf(out, " )");
+    fprintf(out, ")");
   }
-  fprintf(out, " ");
 }
 
 void term_print_compact(term t, FILE *out) {

@@ -1,0 +1,123 @@
+t1 
+f ( a bb ccc ) 
+f (
+  a
+  bb
+  ccc
+)
+@ ( x ! ( y ) :: ( z z ) ) 
+@ (
+  x
+  ! (
+    y
+  )
+  :: (
+    z
+    z
+  )
+)
+######### term 1 #######
+e_t::u/ (
+  e_t::u/
+  e_t::u/
+  e_t::u/
+  e_t::u/
+)
+top SYMBOL: e_t::u/
+top nbr argument: 4
+
+top argument #3: 
+e_t::u/
+e_t::u/ ( e_t::u/ e_t::u/ e_t::u/ e_t::u/ ) 
+extracting argument #2: 
+e_t::u/ 
+remains: 
+e_t::u/ ( e_t::u/ e_t::u/ e_t::u/ ) 
+
+extracting premier argument
+e_t::u/ 
+remains: 
+e_t::u/ ( e_t::u/ e_t::u/ ) 
+
+extracting dernier argument
+e_t::u/ 
+remains: 
+e_t::u/ ( e_t::u/ ) 
+
+extracting dernier argument
+e_t::u/ 
+remains: 
+e_t::u/ 
+symbol "A_TROUVER" IS NOT present
+######### term 2 #######
+ert (
+  zert
+  dq
+  +
+  *
+  /
+  12 (
+    er
+    ty (
+      er
+      A_TROUVER
+    )
+    ->
+  )
+)
+top SYMBOL: ert
+top nbr argument: 6
+
+top argument #5: 
+12 (
+  er
+  ty (
+    er
+    A_TROUVER
+  )
+  ->
+)
+ert ( zert dq + * / 12 ( er ty ( er A_TROUVER ) -> ) ) 
+extracting argument #3: 
+* 
+remains: 
+ert ( zert dq + / 12 ( er ty ( er A_TROUVER ) -> ) ) 
+
+extracting premier argument
+zert 
+remains: 
+ert ( dq + / 12 ( er ty ( er A_TROUVER ) -> ) ) 
+
+extracting dernier argument
+12 ( er ty ( er A_TROUVER ) -> ) 
+remains: 
+ert ( dq + / ) 
+
+extracting dernier argument
+/ 
+remains: 
+ert ( dq + ) 
+
+extracting dernier argument
++ 
+remains: 
+ert ( dq ) 
+
+extracting dernier argument
+dq 
+remains: 
+ert 
+symbol "A_TROUVER" IS NOT present
+Comparaison avec la copie 0
+ert 
+ert 
+ert ( ert ) 
+Comparaison avec la copie modifiée -1
+Comparaison avec la copie modifiée (dans l'autre sens) 1
+/ ( O / 2 / 4 ) 
+et ( z + ( 5 4 ) * / 12 ( uy Nog ( er A_TROUVER ) <-> ( TR ( 'a 'b ) %% ( '_u 67 ( $$ ) ) ) ) ) 
+z 
++ ( 5 4 ) 
+* 
+/ 
+12 ( uy Nog ( er A_TROUVER ) <-> ( TR ( 'a 'b ) %% ( '_u 67 ( $$ ) ) ) ) 
