@@ -31,19 +31,25 @@ term term_scan(FILE *in) {
   char symbol[SYMBOL_STRING_LENGHT_BASE];
   // First term
   assert(fscanf(in, "%s", symbol) != EOF);
-  term t = term_create(sstring_create_string(symbol));
+  sstring s = sstring_create_string(symbol);
+  term start = term_create(s);
+  sstring_destroy(&s);
   fscanf(in, "%s", symbol); // Get first parenthese
   // Arguments
+  term t = start;
   while (fscanf(in, "%s", symbol) != EOF) {
     if (symbol[0] == ')') {
       t = term_get_father(t);
     } else if (symbol[0] == '(') {
       t = term_get_argument(t, term_get_arity(t) - 1);
     } else {
-      term_add_argument_last(t, term_create(sstring_create_string(symbol)));
+      sstring s = sstring_create_string(symbol);
+      term arg = term_create(s);
+      sstring_destroy(&s);
+      term_add_argument_last(t, arg);
     }
   }
-  return t;
+  return start;
 }
 
 /*!
@@ -96,11 +102,8 @@ static void term_print_compact_rec(term const t, FILE *const out) {
   if (term_get_arity(t)) {
     fprintf(out, " ( ");
     for (int i = 0; i < term_get_arity(t); i++) {
-      term arg = term_get_argument(t, i);
-      if (arg != NULL) {
-        term_print_compact_rec(arg, out);
-        fprintf(out, " ");
-      }
+      term_print_compact_rec(term_get_argument(t, i), out);
+      fprintf(out, " ");
     }
     fprintf(out, ")");
   }
