@@ -35,5 +35,8 @@
 test_term
 test_sstring
 test_unify
+test_rewrite
+test_variable
+test_valuate
 
-DATA/Results/test_*
+DATA/Results/*
