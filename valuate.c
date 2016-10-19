@@ -28,7 +28,14 @@ typedef struct variable_definition_list_struct {
  * term_valuate_inner
  */
 static sstring ss_set = NULL;
-
+static void
+variable_definition_list_destroy(variable_definition_list *var_list) {
+  variable_definition_list courant = *var_list;
+  while (courant != NULL) {
+    courant = (*var_list)->next;
+    free(*var_list);
+  }
+}
 static variable_definition_list add_var_list(variable_definition_list var_list,
                                              term term_var, term term_value) {
   sstring symbol = term_get_symbol(term_var);
@@ -76,5 +83,7 @@ term term_valuate(term t) {
   ss_set = sstring_create_string(symbol_set);
   variable_definition_list va_list = NULL;
   sstring_destroy(&ss_set);
-  return term_valuate_inner(new_t, va_list);
+  new_t = term_valuate_inner(new_t, va_list);
+  variable_definition_list_destroy(&va_list);
+  return new_t;
 }
