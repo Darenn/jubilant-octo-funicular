@@ -19,7 +19,7 @@ static inline void skip_space(FILE *in) {
 /*!
  * Initial size for scaning a symbol.
  */
-#define SYMBOL_STRING_LENGHT_BASE 10
+#define SYMBOL_STRING_LENGHT_BASE 30
 
 static sstring get_next_symbol(FILE *in) {
   assert(in != NULL);

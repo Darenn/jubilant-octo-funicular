@@ -2,6 +2,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 
+#include "term_io.h"
 #include "term_variable.h"
 
 static bool variable_is_valide(sstring variable) {
@@ -31,11 +32,12 @@ void term_replace_variable(term t, sstring variable, term value) {
   assert(t != NULL);
   assert(value != NULL);
   assert(variable_is_valide(variable));
-  for (int i = 0; i < term_get_arity(t); i++) {
-    term arg = term_get_argument(t, i);
-    term_replace_variable(arg, variable, value);
-  }
-  if (sstring_compare(term_get_symbol(t), variable)) {
+  if (sstring_compare(term_get_symbol(t), variable) == 0) {
     term_replace_copy(t, value);
+  } else {
+    for (int i = 0; i < term_get_arity(t); i++) {
+      term arg = term_get_argument(t, i);
+      term_replace_variable(arg, variable, value);
+    }
   }
 }

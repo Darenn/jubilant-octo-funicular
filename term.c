@@ -271,6 +271,24 @@ term term_copy_translate_position(term t, term *loc) {
 void term_replace_copy(term t_loc, term t_src) {
   assert(t_loc != NULL);
   assert(t_src != NULL);
+  term_list current = t_loc->argument_first;
+  while (current != NULL) {
+    term_list next = current->next;
+    term_list_destroy(&current);
+    current = next;
+  }
+  sstring_destroy(&t_loc->symbol);
+  t_loc->symbol = sstring_copy(t_src->symbol);
+  t_loc->arity = 0;
+  t_loc->argument_first = NULL;
+  t_loc->argument_last = NULL;
+  // Add src args
+  term_argument_traversal tat = term_argument_traversal_create(t_src);
+  while (term_argument_traversal_has_next(tat)) {
+    term_add_argument_last(t_loc,
+                           term_copy(term_argument_traversal_get_next(tat)));
+  }
+  term_argument_traversal_destroy(&tat);
 }
 
 int term_compare(term t1, term t2) {
