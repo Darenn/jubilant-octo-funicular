@@ -203,7 +203,7 @@ bool term_contains_symbol(term t, sstring symbol) {
   } else {
     for (int i = 0; i < t->arity; i++) {
       term arg = term_get_argument(t, i);
-      if (term_contains_symbol(arg, symbol) == 0) {
+      if (term_contains_symbol(arg, symbol)) {
         return true;
       }
     }
