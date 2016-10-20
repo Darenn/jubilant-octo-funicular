@@ -5,6 +5,11 @@
 #include "term_io.h"
 #include "term_variable.h"
 
+/*!
+ * Check if variable is in valid format.
+ * \param variable sstring the variable to test.
+ * \return true if \c variable is in correct format to be a valid variable.
+ */
 static bool variable_is_valide(sstring variable) {
   if (sstring_get_length(variable) > 1) {
     if (sstring_get_char(variable, 0) == '\'') {

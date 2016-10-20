@@ -21,6 +21,11 @@ static inline void skip_space(FILE *in) {
  */
 #define SYMBOL_STRING_LENGHT_BASE 30
 
+/*!
+ * Get the next symbol in stream.
+ * \param in FILE the stream.
+ * \return sstring the next symbol.
+ */
 static sstring get_next_symbol(FILE *in) {
   assert(in != NULL);
   // Init
@@ -38,6 +43,11 @@ static sstring get_next_symbol(FILE *in) {
   return sstring_create_string(symbol);
 }
 
+/*!
+ * Get the next separator in stream.
+ * \param in FILE the stream.
+ * \return sstring the next separator.
+ */
 static char get_next_separator(FILE *in) {
   assert(in != NULL);
   skip_space(in);
