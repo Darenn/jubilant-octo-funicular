@@ -82,8 +82,9 @@ term term_valuate(term t) {
   term new_t = t;
   ss_set = sstring_create_string(symbol_set);
   variable_definition_list va_list = NULL;
-  sstring_destroy(&ss_set);
   new_t = term_valuate_inner(new_t, va_list);
   variable_definition_list_destroy(&va_list);
+  sstring_destroy(&ss_set);
+
   return new_t;
 }
