@@ -31,4 +31,11 @@ void term_replace_variable(term t, sstring variable, term value) {
   assert(t != NULL);
   assert(value != NULL);
   assert(variable_is_valide(variable));
+  for (int i = 0; i < term_get_arity(t); i++) {
+    term arg = term_get_argument(t, i);
+    term_replace_variable(arg, variable, value);
+  }
+  if (sstring_compare(term_get_symbol(t), variable)) {
+    term_replace_copy(t, value);
+  }
 }

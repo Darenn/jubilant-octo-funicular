@@ -271,8 +271,6 @@ term term_copy_translate_position(term t, term *loc) {
 void term_replace_copy(term t_loc, term t_src) {
   assert(t_loc != NULL);
   assert(t_src != NULL);
-  term_destroy(&t_loc);
-  t_loc = term_copy(t_src);
 }
 
 int term_compare(term t1, term t2) {
@@ -299,6 +297,7 @@ term_argument_traversal term_argument_traversal_create(term t) {
   assert(t != NULL);
   term_argument_traversal tt =
       malloc(sizeof(struct term_argument_traversal_struct));
+  assert(tt != NULL);
   tt->tls = t->argument_first;
   return tt;
 }
