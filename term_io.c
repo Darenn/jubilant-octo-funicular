@@ -9,8 +9,9 @@
  * \param in input stream.
  */
 static inline void skip_space(FILE *in) {
-  char c;
-  while ((EOF != (c = getc(in))) && (isspace(c))) {
+  char c = getc(in);
+  while ((EOF != c) && (isspace(c))) {
+    c = getc(in);
   };
   ungetc(c, in);
 }
@@ -20,6 +21,35 @@ static inline void skip_space(FILE *in) {
  */
 #define SYMBOL_STRING_LENGHT_BASE 10
 
+static sstring get_next_symbol(FILE *in) {
+  assert(in != NULL);
+  // Init
+  char c;
+  char symbol[SYMBOL_STRING_LENGHT_BASE];
+  int i = 0;
+  // Get symbol
+  skip_space(in);
+  while ((i < SYMBOL_STRING_LENGHT_BASE) && (EOF != (c = getc(in))) &&
+         !isspace(c) && (c != '(') && (c != ')')) {
+    symbol[i++] = c;
+  }
+  symbol[i] = 0;
+  ungetc(c, in);
+  return sstring_create_string(symbol);
+}
+
+static char get_next_separator(FILE *in) {
+  assert(in != NULL);
+  skip_space(in);
+  char c = getc(in);
+  if ((c == EOF) || (c == '(') || (c == ')')) {
+    return c;
+  } else {
+    ungetc(c, in);
+    return ' ';
+  }
+}
+
 /*
  * Scan a sequence of non space and non parenthesis (symbol) of unbounded
  * length.
@@ -27,26 +57,27 @@ static inline void skip_space(FILE *in) {
  */
 term term_scan(FILE *in) {
   assert(in != NULL);
-  // Create char* to store symbol
-  char symbol[SYMBOL_STRING_LENGHT_BASE];
   // First term
-  assert(fscanf(in, "%s", symbol) != EOF);
-  sstring s = sstring_create_string(symbol);
+  sstring s = get_next_symbol(in);
   term start = term_create(s);
   sstring_destroy(&s);
-  fscanf(in, "%s", symbol); // Get first parenthese
-  // Arguments
-  term t = start;
-  while (fscanf(in, "%s", symbol) != EOF) {
-    if (symbol[0] == ')') {
-      t = term_get_father(t);
-    } else if (symbol[0] == '(') {
-      t = term_get_argument(t, term_get_arity(t) - 1);
-    } else {
-      sstring s = sstring_create_string(symbol);
-      term arg = term_create(s);
-      sstring_destroy(&s);
-      term_add_argument_last(t, arg);
+
+  // Get first parenthese
+  char sep = get_next_separator(in);
+  if (EOF != sep) {
+    // Get arguments
+    term t = start;
+    while ((sep = get_next_separator(in)) != EOF) {
+      if (sep == ')') {
+        t = term_get_father(t);
+      } else if (sep == '(') {
+        t = term_get_argument(t, term_get_arity(t) - 1);
+      } else {
+        sstring s = get_next_symbol(in);
+        term arg = term_create(s);
+        sstring_destroy(&s);
+        term_add_argument_last(t, arg);
+      }
     }
   }
   return start;
