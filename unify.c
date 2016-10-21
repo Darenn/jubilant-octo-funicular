@@ -26,7 +26,9 @@ static char const *const symbol_incompatible = "incompatible";
 * \brief Create a term, add leftTerm and rightTerm as arguments and return it.
 */
 #define RETURN_TERM_WITH_TWO_ARGUMENTS(term_symbol, leftTerm, rightTerm)       \
-  term t = term_create(sstring_create_string(term_symbol));                    \
+  sstring symbol = sstring_create_string(term_symbol);                         \
+  term t = term_create(symbol);                                                \
+  sstring_destroy(&symbol);                                                    \
   term_add_argument_first(t, term_copy(rightTerm));                            \
   term_add_argument_first(t, term_copy(leftTerm));                             \
   return t;
@@ -135,16 +137,16 @@ static term term_create_val_for_variable(term termA, term termB) {
 
 term term_unify(const term t) {
   TEST_TERM_IS_UNIFY(t);
-  term res = term_create(sstring_create_string(symbol_solution));
+  sstring resSymbol = sstring_create_string(symbol_solution);
+  term res = term_create(resSymbol);
+  sstring_destroy(&resSymbol);
   term sequenceToUnify = term_copy(t);
   term nextSequenceToUnify = term_create(sstring_create_string(symbol_unify));
   bool incompatible = false;
   term_argument_traversal equalityTraversal =
       term_argument_traversal_create(sequenceToUnify);
   while (term_argument_traversal_has_next(equalityTraversal) && !incompatible) {
-    // term_add_argument_last(res, term_create(sstring_create_string("a")));
     term equality = term_argument_traversal_get_next(equalityTraversal);
-    // term equality = term_get_argument(sequenceToUnify, 0);
     TEST_TERM_IS_EQUALITY(equality);
     term leftTerm = term_get_argument(equality, 0);
     term rightTerm = term_get_argument(equality, 1);
@@ -182,15 +184,17 @@ term term_unify(const term t) {
                                                     nextSequenceToUnify);
       }
     }
-    if (!term_argument_traversal_has_next(equalityTraversal)) {
+    if (!term_argument_traversal_has_next(equalityTraversal) &&
+        term_get_arity(nextSequenceToUnify) > 0) {
       sequenceToUnify = term_copy(nextSequenceToUnify);
       term_argument_traversal_destroy(&equalityTraversal);
       equalityTraversal = term_argument_traversal_create(sequenceToUnify);
       term_destroy(&nextSequenceToUnify);
       nextSequenceToUnify = term_create(sstring_create_string(symbol_unify));
     }
-    // term argChecked = term_extract_argument(sequenceToUnify, 0);
-    // term_destroy(&argChecked); voir plus tard pour le sstring
   }
+  term_destroy(&sequenceToUnify);
+  term_destroy(&nextSequenceToUnify);
+  term_argument_traversal_destroy(&equalityTraversal);
   return res;
 }
