@@ -161,12 +161,12 @@ term term_unify(const term t) {
         term tVal = term_create_val_for_variable(leftTerm, rightTerm);
         term_replace_variable(sequenceToUnify,
                               term_get_symbol(term_get_argument(tVal, 0)),
-                              term_get_argument(tVal, 0));
+                              term_get_argument(tVal, 1));
         term_replace_variable(nextSequenceToUnify,
                               term_get_symbol(term_get_argument(tVal, 0)),
-                              term_get_argument(tVal, 0));
+                              term_get_argument(tVal, 1));
         term_replace_variable(res, term_get_symbol(term_get_argument(tVal, 0)),
-                              term_get_argument(tVal, 0));
+                              term_get_argument(tVal, 1));
         term_add_argument_last(res, tVal);
       }
     } else { // No variables
