@@ -155,9 +155,7 @@ term term_unify(const term t) {
       } else if (one_term_contains_the_other(leftTerm, rightTerm)) {
         // If the variable is contained into the other term, the equality is
         // incoherent, so it is incompatible
-        term_add_argument_last(res, leftTerm);
-        term_add_argument_last(res, rightTerm);
-        // SET_RES_INCOMPATIBLE(res, leftTerm, rightTerm, incompatible);
+        SET_RES_INCOMPATIBLE(res, leftTerm, rightTerm, incompatible);
       } else { // term left not in term right and terms not equal
         // So we get the value of this variable and replace it
         term tVal = term_create_val_for_variable(leftTerm, rightTerm);
