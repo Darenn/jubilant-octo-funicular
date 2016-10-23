@@ -132,7 +132,7 @@ static term term_create_val_for_variable(term termA, term termB) {
     variable = termB;
     value = termA;
   }
-  return term_create_val(term_copy(variable), term_copy(value));
+  return term_create_val(variable, value);
 }
 
 term term_unify(const term t) {
@@ -141,7 +141,8 @@ term term_unify(const term t) {
   term res = term_create(resSymbol);
   sstring_destroy(&resSymbol);
   term sequenceToUnify = term_copy(t);
-  term nextSequenceToUnify = term_create(sstring_create_string(symbol_unify));
+  sstring unify = sstring_create_string(symbol_unify);
+  term nextSequenceToUnify = term_create(unify);
   bool incompatible = false;
   term_argument_traversal equalityTraversal =
       term_argument_traversal_create(sequenceToUnify);
@@ -186,13 +187,15 @@ term term_unify(const term t) {
     }
     if (!term_argument_traversal_has_next(equalityTraversal) &&
         term_get_arity(nextSequenceToUnify) > 0) {
+      term_destroy(&sequenceToUnify);
       sequenceToUnify = term_copy(nextSequenceToUnify);
       term_argument_traversal_destroy(&equalityTraversal);
       equalityTraversal = term_argument_traversal_create(sequenceToUnify);
       term_destroy(&nextSequenceToUnify);
-      nextSequenceToUnify = term_create(sstring_create_string(symbol_unify));
+      nextSequenceToUnify = term_create(unify);
     }
   }
+  sstring_destroy(&unify);
   term_destroy(&sequenceToUnify);
   term_destroy(&nextSequenceToUnify);
   term_argument_traversal_destroy(&equalityTraversal);
