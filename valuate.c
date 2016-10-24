@@ -1,9 +1,9 @@
+#include "term_io.h"
 #include <assert.h>
 #include <ctype.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #undef NDEBUG // FORCE ASSERT ACTIVATION
-
 #include "term_variable.h"
 #include "valuate.h"
 
@@ -28,29 +28,46 @@ typedef struct variable_definition_list_struct {
  * term_valuate_inner
  */
 static sstring ss_set = NULL;
-static void
-variable_definition_list_destroy(variable_definition_list *var_list) {
-  variable_definition_list courant = *var_list;
-  while (courant != NULL) {
-    courant = (*var_list)->next;
-    free(*var_list);
-  }
-}
-static variable_definition_list add_var_list(variable_definition_list var_list,
-                                             term term_var, term term_value) {
-  sstring symbol = term_get_symbol(term_var);
-  while (var_list != NULL) {
-    if (sstring_compare(var_list->variable, symbol) == 0) {
-      return var_list;
+static void destroyVDL(variable_definition_list *ls) {
+  if (*ls != NULL) {
+    variable_definition_list last = *ls;
+    variable_definition_list current = ((*ls)->next);
+    while (current != NULL) {
+      term_destroy(&(current->value));
+      sstring_destroy(&(current->variable));
+      free(last);
+      last = current;
+      current = (current->next);
     }
-    var_list = var_list->next;
+    free(last);
   }
-  var_list = (variable_definition_list)malloc(
-      sizeof(struct variable_definition_list_struct));
-  var_list->variable = term_get_symbol(term_var);
-  var_list->value = term_value;
-  return var_list;
 }
+variable_definition_list pushBackVDL(variable_definition_list ls, term variable,
+                                     term value) {
+  variable_definition_list ils = (variable_definition_list)malloc(
+      sizeof(struct variable_definition_list_struct));
+  ils->value = (value);
+  ils->variable = (term_get_symbol(variable));
+  ils->next = NULL;
+  if (ls != NULL) {
+    variable_definition_list tmp = ls;
+    while (tmp->next != NULL) {
+      tmp = tmp->next;
+    }
+    tmp->next = ils;
+    return ls;
+  }
+  return ils;
+}
+variable_definition_list *getLastOccurency(variable_definition_list *ls,
+                                           term variable) {
+  while ((*ls)->next != NULL) {
+    (*ls) = (*ls)->next;
+  }
+
+  return ls;
+}
+
 /*!
  * Recursive valuating function.
  * \param t term being valuated.
@@ -58,33 +75,35 @@ static variable_definition_list add_var_list(variable_definition_list var_list,
  */
 static term term_valuate_inner(term t, variable_definition_list var_list) {
   if (sstring_compare(term_get_symbol(t), ss_set) == 0) {
-    if (term_get_arity(t) > 0) {
-      for (int i = 0; i < term_get_arity(t); i++) {
-        term arg = term_get_argument(t, i);
-        if (sstring_compare(term_get_symbol(term_get_father(arg)), ss_set) ==
-            0) {
-          if (term_is_variable(arg)) {
-            var_list = add_var_list(var_list, arg, term_get_argument(t, i + 1));
-            term_replace_variable(t, var_list->variable, var_list->value);
-          }
-        }
-        term_valuate_inner(term_get_argument(t, i), var_list);
+    if (term_get_arity(t) == 3) {
+      term variable = term_get_argument(t, 0);
+      term value = term_get_argument(t, 1);
+      term arg = term_get_argument(t, 2);
+      if (term_is_variable(variable)) {
+        var_list = pushBackVDL(var_list, variable, value);
+        variable_definition_list *vdl = getLastOccurency(&var_list, variable);
+        term_replace_variable(arg, (*vdl)->variable, (*vdl)->value);
+        return term_valuate_inner(arg, var_list);
       }
-
-      return t;
     }
+  } else {
+    for (int i = 0; i < term_get_arity(t); i++) {
+      term tmp = term_extract_argument(t, i);
+      term arg = term_valuate_inner(tmp, var_list);
+      term_add_argument_position(t, arg, i);
+    }
+    return t;
   }
   return t;
 }
 
 term term_valuate(term t) {
   assert(t != NULL);
-  term new_t = t;
+  term new_t = term_copy(t);
   ss_set = sstring_create_string(symbol_set);
   variable_definition_list va_list = NULL;
   new_t = term_valuate_inner(new_t, va_list);
-  variable_definition_list_destroy(&va_list);
+  destroyVDL(&va_list);
   sstring_destroy(&ss_set);
-
   return new_t;
 }
