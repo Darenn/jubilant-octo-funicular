@@ -58,6 +58,11 @@ static bool symbol_is_valild(sstring const symbol) {
   return true;
 }
 
+/*!
+ * Create new term_list.
+ * \param t term.
+ * \return new term_list with \c t inside.
+ */
 static term_list term_list_create(term t) {
   assert(t != NULL);
   term_list tl = malloc(sizeof(struct term_list_struct));
@@ -79,6 +84,10 @@ term term_create(sstring symbol) {
   return t;
 }
 
+/*!
+ * Destroy a term_list.
+ * \param tl term_list to destroy.
+ */
 static void term_list_destroy(term_list *tl) {
   assert(tl != NULL);
   if (*tl != NULL) {
@@ -119,6 +128,11 @@ term term_get_father(term t) {
   return t->father;
 }
 
+/*!
+ * Add an argument on an empty term.
+ * \param t term the parent.
+ * \param a term the argument.
+ */
 static inline term_list term_add_argument_empty(term t, term a) {
   assert(t != NULL);
   assert(a != NULL);
@@ -131,6 +145,12 @@ static inline term_list term_add_argument_empty(term t, term a) {
   return arg;
 }
 
+/*!
+ * Get a term_list from the arguments.
+ * \param t term the parent.
+ * \param pos int the position to get the term_list.
+ * \return the term at position \c pos.
+ */
 static inline term_list term_list_get(term t, int pos) {
   assert(t != NULL);
   assert(pos >= 0);
@@ -203,7 +223,7 @@ bool term_contains_symbol(term t, sstring symbol) {
   } else {
     for (int i = 0; i < t->arity; i++) {
       term arg = term_get_argument(t, i);
-      if (term_contains_symbol(arg, symbol) == 0) {
+      if (term_contains_symbol(arg, symbol)) {
         return true;
       }
     }

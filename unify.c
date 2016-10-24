@@ -26,9 +26,11 @@ static char const *const symbol_incompatible = "incompatible";
 * \brief Create a term, add leftTerm and rightTerm as arguments and return it.
 */
 #define RETURN_TERM_WITH_TWO_ARGUMENTS(term_symbol, leftTerm, rightTerm)       \
-  term t = term_create(sstring_create_string(term_symbol));                    \
-  term_add_argument_first(t, rightTerm);                                       \
-  term_add_argument_first(t, leftTerm);                                        \
+  sstring symbol = sstring_create_string(term_symbol);                         \
+  term t = term_create(symbol);                                                \
+  sstring_destroy(&symbol);                                                    \
+  term_add_argument_first(t, term_copy(rightTerm));                            \
+  term_add_argument_first(t, term_copy(leftTerm));                             \
   return t;
 
 /*!
@@ -67,7 +69,7 @@ static term term_create_equality(const term leftTerm, const term rightTerm) {
 */
 #define SET_RES_INCOMPATIBLE(res, leftTerm, rightTerm, bool_incompatible)      \
   term_destroy(&res);                                                          \
-  res = term_create_imcompatible(leftTerm, rightTerm);                         \
+  res = term_create_imcompatible(term_copy(leftTerm), term_copy(rightTerm));   \
   bool_incompatible = true;
 
 /*!
@@ -94,8 +96,8 @@ static term term_create_equality(const term leftTerm, const term rightTerm) {
 */
 #define CREATE_EQUALITIES_FOR_TERMS_AND_ADD_THEM_TO(termA, termB, sequence)    \
   for (int i = 0; i < term_get_arity(termA); i++) {                            \
-    term tLeft = term_extract_argument(termA, i);                              \
-    term tRight = term_extract_argument(termB, i);                             \
+    term tLeft = term_copy(term_get_argument(termA, i));                       \
+    term tRight = term_copy(term_get_argument(termB, i));                      \
     term newEquality = term_create_equality(tLeft, tRight);                    \
     term_add_argument_last(sequence, newEquality);                             \
   }
@@ -135,8 +137,12 @@ static term term_create_val_for_variable(term termA, term termB) {
 
 term term_unify(const term t) {
   TEST_TERM_IS_UNIFY(t);
-  term res = term_create(sstring_create_string(symbol_solution));
+  sstring resSymbol = sstring_create_string(symbol_solution);
+  term res = term_create(resSymbol);
+  sstring_destroy(&resSymbol);
   term sequenceToUnify = term_copy(t);
+  sstring unify = sstring_create_string(symbol_unify);
+  term nextSequenceToUnify = term_create(unify);
   bool incompatible = false;
   term_argument_traversal equalityTraversal =
       term_argument_traversal_create(sequenceToUnify);
@@ -156,11 +162,15 @@ term term_unify(const term t) {
       } else { // term left not in term right and terms not equal
         // So we get the value of this variable and replace it
         term tVal = term_create_val_for_variable(leftTerm, rightTerm);
-        term_replace_variable(sequenceToUnify, term_get_symbol(tVal),
-                              term_get_argument(tVal, 0));
-        term_replace_variable(res, term_get_symbol(tVal),
-                              term_get_argument(tVal, 0));
-        term_add_argument_last(sequenceToUnify, tVal);
+        term_replace_variable(sequenceToUnify,
+                              term_get_symbol(term_get_argument(tVal, 0)),
+                              term_get_argument(tVal, 1));
+        term_replace_variable(nextSequenceToUnify,
+                              term_get_symbol(term_get_argument(tVal, 0)),
+                              term_get_argument(tVal, 1));
+        term_replace_variable(res, term_get_symbol(term_get_argument(tVal, 0)),
+                              term_get_argument(tVal, 1));
+        term_add_argument_last(res, tVal);
       }
     } else { // No variables
       if (sstring_compare(term_get_symbol(leftTerm),
@@ -172,10 +182,22 @@ term term_unify(const term t) {
         // Create an equality for each couple of arguments between both terms
         // and add it to the end of the term to unify
         CREATE_EQUALITIES_FOR_TERMS_AND_ADD_THEM_TO(leftTerm, rightTerm,
-                                                    sequenceToUnify);
+                                                    nextSequenceToUnify);
       }
     }
+    if (!term_argument_traversal_has_next(equalityTraversal) &&
+        term_get_arity(nextSequenceToUnify) > 0) {
+      term_destroy(&sequenceToUnify);
+      sequenceToUnify = term_copy(nextSequenceToUnify);
+      term_argument_traversal_destroy(&equalityTraversal);
+      equalityTraversal = term_argument_traversal_create(sequenceToUnify);
+      term_destroy(&nextSequenceToUnify);
+      nextSequenceToUnify = term_create(unify);
+    }
   }
+  sstring_destroy(&unify);
+  term_destroy(&sequenceToUnify);
+  term_destroy(&nextSequenceToUnify);
   term_argument_traversal_destroy(&equalityTraversal);
   return res;
 }
