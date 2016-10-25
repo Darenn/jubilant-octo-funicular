@@ -69,7 +69,7 @@ static term term_create_equality(const term leftTerm, const term rightTerm) {
 */
 #define SET_RES_INCOMPATIBLE(res, leftTerm, rightTerm, bool_incompatible)      \
   term_destroy(&res);                                                          \
-  res = term_create_imcompatible(term_copy(leftTerm), term_copy(rightTerm));   \
+  res = term_create_imcompatible(leftTerm, rightTerm);                         \
   bool_incompatible = true;
 
 /*!
@@ -96,8 +96,8 @@ static term term_create_equality(const term leftTerm, const term rightTerm) {
 */
 #define CREATE_EQUALITIES_FOR_TERMS_AND_ADD_THEM_TO(termA, termB, sequence)    \
   for (int i = 0; i < term_get_arity(termA); i++) {                            \
-    term tLeft = term_copy(term_get_argument(termA, i));                       \
-    term tRight = term_copy(term_get_argument(termB, i));                      \
+    term tLeft = term_get_argument(termA, i);                                  \
+    term tRight = term_get_argument(termB, i);                                 \
     term newEquality = term_create_equality(tLeft, tRight);                    \
     term_add_argument_last(sequence, newEquality);                             \
   }
