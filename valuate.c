@@ -42,30 +42,35 @@ static void destroyVDL(variable_definition_list *ls) {
     free(last);
   }
 }
-variable_definition_list pushBackVDL(variable_definition_list ls, term variable,
-                                     term value) {
+void pushBackVDL(variable_definition_list *ls, term variable, term value) {
   variable_definition_list ils = (variable_definition_list)malloc(
       sizeof(struct variable_definition_list_struct));
   ils->value = (value);
   ils->variable = (term_get_symbol(variable));
   ils->next = NULL;
-  if (ls != NULL) {
-    variable_definition_list tmp = ls;
+  if (*ls != NULL) {
+    variable_definition_list tmp = *ls;
     while (tmp->next != NULL) {
       tmp = tmp->next;
     }
     tmp->next = ils;
-    return ls;
+  } else {
+    *ls = ils;
   }
-  return ils;
 }
-variable_definition_list *getLastOccurency(variable_definition_list *ls,
-                                           term variable) {
-  while ((*ls)->next != NULL) {
+variable_definition_list *getLast(variable_definition_list *ls) {
+  int i = 0;
+  variable_definition_list *tmp = ls;
+  while ((*tmp)->next != NULL) {
+    (*tmp) = (*tmp)->next;
+    i++;
+  }
+  for (int j = 0; j < i; j++) {
     (*ls) = (*ls)->next;
   }
+  (*ls)->next = NULL;
 
-  return ls;
+  return tmp;
 }
 
 /*!
@@ -78,21 +83,28 @@ static term term_valuate_inner(term t, variable_definition_list var_list) {
     if (term_get_arity(t) == 3) {
       term variable = term_get_argument(t, 0);
       term value = term_get_argument(t, 1);
-      term arg = term_get_argument(t, 2);
       if (term_is_variable(variable)) {
-        var_list = pushBackVDL(var_list, variable, value);
-        variable_definition_list *vdl = getLastOccurency(&var_list, variable);
-        term_replace_variable(arg, (*vdl)->variable, (*vdl)->value);
-        return term_valuate_inner(arg, var_list);
+        pushBackVDL(&var_list, variable, value);
       }
     }
-  } else {
-    for (int i = 0; i < term_get_arity(t); i++) {
-      term tmp = term_extract_argument(t, i);
-      term arg = term_valuate_inner(tmp, var_list);
-      term_add_argument_position(t, arg, i);
+  }
+
+  for (int i = 0; i < term_get_arity(t); i++) {
+    term tmp = term_extract_argument(t, i);
+    term arg = term_valuate_inner(tmp, var_list);
+    term_add_argument_position(t, arg, i);
+  }
+  if (sstring_compare(term_get_symbol(t), ss_set) == 0) {
+    if (term_get_arity(t) == 3) {
+      term variable = term_get_argument(t, 0);
+      term arg = term_get_argument(t, 2);
+      if (term_is_variable(variable)) {
+        variable_definition_list *vdl = getLast(&var_list);
+        term_replace_variable(arg, (*vdl)->variable, (*vdl)->value);
+        destroyVDL(vdl);
+        return arg;
+      }
     }
-    return t;
   }
   return t;
 }
