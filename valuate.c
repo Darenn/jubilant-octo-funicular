@@ -28,49 +28,29 @@ typedef struct variable_definition_list_struct {
  * term_valuate_inner
  */
 static sstring ss_set = NULL;
+
 static void destroyVDL(variable_definition_list *ls) {
   if (*ls != NULL) {
-    variable_definition_list last = *ls;
-    variable_definition_list current = ((*ls)->next);
-    while (current != NULL) {
-      term_destroy(&(current->value));
-      sstring_destroy(&(current->variable));
-      free(last);
-      last = current;
-      current = (current->next);
-    }
-    free(last);
+    term_destroy(&((*ls)->value));
+    sstring_destroy(&((*ls)->variable));
+    destroyVDL(&(*ls)->next);
+    free(*ls);
   }
 }
-void pushBackVDL(variable_definition_list *ls, term variable, term value) {
+static variable_definition_list pushBackVDL(variable_definition_list ls,
+                                            sstring variable, term value) {
   variable_definition_list ils = (variable_definition_list)malloc(
       sizeof(struct variable_definition_list_struct));
-  ils->value = (value);
-  ils->variable = (term_get_symbol(variable));
-  ils->next = NULL;
-  if (*ls != NULL) {
-    variable_definition_list tmp = *ls;
-    while (tmp->next != NULL) {
-      tmp = tmp->next;
-    }
-    tmp->next = ils;
-  } else {
-    *ls = ils;
-  }
+  ils->value = term_copy(value);
+  ils->variable = sstring_copy(variable);
+  ils->next = ls;
+  return ils;
 }
-variable_definition_list *getLast(variable_definition_list *ls) {
-  int i = 0;
-  variable_definition_list *tmp = ls;
-  while ((*tmp)->next != NULL) {
-    (*tmp) = (*tmp)->next;
-    i++;
-  }
-  for (int j = 0; j < i; j++) {
-    (*ls) = (*ls)->next;
-  }
-  (*ls)->next = NULL;
 
-  return tmp;
+static bool term_is_set(term t) {
+  return (sstring_compare(term_get_symbol(t), ss_set) == 0) &&
+         (term_get_arity(t) == 3) &&
+         (term_is_variable(term_get_argument(t, 0)));
 }
 
 /*!
@@ -79,14 +59,23 @@ variable_definition_list *getLast(variable_definition_list *ls) {
  * \param t_res valuated variable stack (list of active variables).
  */
 static term term_valuate_inner(term t, variable_definition_list var_list) {
-  if (sstring_compare(term_get_symbol(t), ss_set) == 0) {
-    if (term_get_arity(t) == 3) {
-      term variable = term_get_argument(t, 0);
-      term value = term_get_argument(t, 1);
-      if (term_is_variable(variable)) {
-        pushBackVDL(&var_list, variable, value);
-      }
-    }
+  if (term_is_set(t)) {
+    term variable = term_extract_argument(t, 0);
+    term value = term_extract_argument(t, 0);
+    term arg = term_extract_argument(t, 0);
+
+    var_list = pushBackVDL(var_list, term_get_symbol(variable), value);
+
+    term_destroy(&variable);
+    term_destroy(&value);
+
+    t = term_valuate_inner(arg, var_list);
+  }
+
+  variable_definition_list tmp = var_list;
+  while (tmp != NULL) {
+    term_replace_variable(t, tmp->variable, tmp->value);
+    tmp = tmp->next;
   }
 
   for (int i = 0; i < term_get_arity(t); i++) {
@@ -94,28 +83,18 @@ static term term_valuate_inner(term t, variable_definition_list var_list) {
     term arg = term_valuate_inner(tmp, var_list);
     term_add_argument_position(t, arg, i);
   }
-  if (sstring_compare(term_get_symbol(t), ss_set) == 0) {
-    if (term_get_arity(t) == 3) {
-      term variable = term_get_argument(t, 0);
-      term arg = term_get_argument(t, 2);
-      if (term_is_variable(variable)) {
-        variable_definition_list *vdl = getLast(&var_list);
-        term_replace_variable(arg, (*vdl)->variable, (*vdl)->value);
-        destroyVDL(vdl);
-        return arg;
-      }
-    }
-  }
+
+  destroyVDL(&var_list);
   return t;
 }
 
 term term_valuate(term t) {
   assert(t != NULL);
-  term new_t = term_copy(t);
+  term t_copy = term_copy(t);
   ss_set = sstring_create_string(symbol_set);
   variable_definition_list va_list = NULL;
-  new_t = term_valuate_inner(new_t, va_list);
+  t_copy = term_valuate_inner(t_copy, va_list);
   destroyVDL(&va_list);
   sstring_destroy(&ss_set);
-  return new_t;
+  return t_copy;
 }
