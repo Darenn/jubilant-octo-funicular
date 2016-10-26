@@ -33,7 +33,7 @@ bool term_is_variable(term t) {
   return result;
 }
 
-void term_replace_variable(term t, sstring variable, term value) {
+void term_replace_if_variable(term t, sstring variable, term value) {
   assert(t != NULL);
   assert(value != NULL);
   assert(variable_is_valide(variable));
@@ -42,12 +42,12 @@ void term_replace_variable(term t, sstring variable, term value) {
   }
 }
 
-void term_replace_variable_rec(term t, sstring variable, term value) {
+void term_replace_variable(term t, sstring variable, term value) {
   assert(t != NULL);
   assert(value != NULL);
   assert(variable_is_valide(variable));
 
-  term_replace_variable(t, variable, value);
+  term_replace_if_variable(t, variable, value);
 
   term_argument_traversal tat = term_argument_traversal_create(t);
   while (term_argument_traversal_has_next(tat)) {
