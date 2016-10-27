@@ -289,12 +289,13 @@ term term_copy_translate_position(term t, term *loc) {
   for (int i = 0; i < t->arity; i++) {
     term arg = term_get_argument(t, i);
     term copyarg = term_copy(arg);
+
+    term_add_argument_last(new, copyarg);
     if (*loc == arg) {
       *loc = copyarg;
       // assert(false);
       assert(*loc != arg);
     }
-    term_add_argument_last(new, copyarg);
   }
   return new;
 }
