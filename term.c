@@ -285,7 +285,18 @@ term term_copy(term t) {
 term term_copy_translate_position(term t, term *loc) {
   assert(t != NULL);
   assert(loc != NULL);
-  return NULL;
+  term new = term_create(t->symbol);
+  for (int i = 0; i < t->arity; i++) {
+    term arg = term_get_argument(t, i);
+    if (&arg == loc) {
+      arg = term_copy(arg);
+      loc = &arg;
+    } else {
+      arg = term_copy(arg);
+    }
+    term_add_argument_last(new, arg);
+  }
+  return new;
 }
 
 void term_replace_copy(term t_loc, term t_src) {
