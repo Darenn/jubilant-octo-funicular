@@ -288,13 +288,13 @@ term term_copy_translate_position(term t, term *loc) {
   term new = term_create(t->symbol);
   for (int i = 0; i < t->arity; i++) {
     term arg = term_get_argument(t, i);
-    if (&arg == loc) {
-      arg = term_copy(arg);
-      loc = &arg;
-    } else {
-      arg = term_copy(arg);
+    term copyarg = term_copy(arg);
+    if (*loc == arg) {
+      *loc = copyarg;
+      // assert(false);
+      assert(*loc != arg);
     }
-    term_add_argument_last(new, arg);
+    term_add_argument_last(new, copyarg);
   }
   return new;
 }
