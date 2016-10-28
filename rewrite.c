@@ -17,6 +17,15 @@ static char const *const symbol_affectation = "affectation";
 /*! Symbol key-word for the valuation of one variable. */
 static char const *const symbol_valuation = "valuation";
 
+static term term_create_valuation(term variable, term value) {
+  sstring valuation_sstring = sstring_create_string(symbol_valuation);
+  term valuation = term_create(valuation_sstring);
+  sstring_destroy(&valuation_sstring);
+  term_add_argument_first(valuation, variable);
+  term_add_argument_last(valuation, value);
+  return valuation;
+}
+
 /*!
  * To check that a term correspond to a term pattern.
  * Terms \c t and \c pattern are not modified.
@@ -28,7 +37,33 @@ static char const *const symbol_valuation = "valuation";
  * accordingly.
  */
 static bool term_is_pattern(term t, term pattern, term affectation) {
-  return false;
+  if (term_is_variable(pattern)) {
+    term newValuation = term_create_valuation(pattern, t);
+    term_add_argument_last(affectation, newValuation);
+    return true;
+  }
+  if (term_compare(t, pattern) == 0) {
+    return true;
+  }
+  term_argument_traversal ttraversal = term_argument_traversal_create(t);
+  term_argument_traversal patternTraversal =
+      term_argument_traversal_create(pattern);
+  while (term_argument_traversal_has_next(ttraversal)) {
+    if (!term_argument_traversal_has_next(patternTraversal)) {
+      return false;
+    }
+    term current_t = term_argument_traversal_get_next(ttraversal);
+    term current_pattern = term_argument_traversal_get_next(patternTraversal);
+    if (!term_is_pattern(current_t, current_pattern, affectation)) {
+      return false;
+    }
+  }
+  term_argument_traversal_destroy(&ttraversal);
+  term_argument_traversal_destroy(&patternTraversal);
+  if (term_compare(t, pattern) != 0) {
+    return false;
+  }
+  return true;
 }
 
 /*!
@@ -41,13 +76,15 @@ static bool term_is_pattern(term t, term pattern, term affectation) {
  */
 static void term_add_arg_sort_unique(term t, term arg) {
   int arity = term_get_arity(t);
-  for (size_t i = 0; i < arity; i++) {
-    if (term_compare(arg, term_get_argument(t, i)) <= 0) {
+  for (int i = 0; i < arity; i++) {
+    if (term_compare(arg, term_get_argument(t, i)) == 0) {
+      return;
+    }
+    if (term_compare(arg, term_get_argument(t, i)) < 0) {
       term_add_argument_position(t, arg, i);
       return;
     }
   }
-  // If all terms are < than arg
   term_add_argument_last(t, arg);
 }
 
@@ -65,7 +102,36 @@ static void term_add_arg_sort_unique(term t, term arg) {
  * \pre none of the term is NULL.
  */
 static void term_rewrite_rule(term t_whole, term t_current, term pattern,
-                              term replace, term results) {}
+                              term replace, term results) {
+  sstring string_affectation = sstring_create_string(symbol_affectation);
+  term affectation = term_create(string_affectation);
+  sstring_destroy(&string_affectation);
+  if (term_is_pattern(t_current, pattern, affectation)) {
+    term r = term_copy(replace);
+    term_argument_traversal affectationTraversal =
+        term_argument_traversal_create(affectation);
+    while (term_argument_traversal_has_next(affectationTraversal)) {
+      term variable = term_argument_traversal_get_next(affectationTraversal);
+      term_replace_variable(r, term_get_symbol(variable),
+                            term_get_argument(variable, 0));
+    }
+    term *loc = &t_current;
+    // term copy = term_copy_translate_position(t_whole, loc);
+    term new = term_create(term_get_symbol(t_whole));
+    for (int i = 0; i < term_get_arity(t_whole); i++) {
+      term arg = term_get_argument(t_whole, i);
+      term copyarg = term_copy(arg);
+      if (*loc == arg) {
+        term_add_argument_last(new, r);
+      } else {
+        term_add_argument_last(new, copyarg);
+      }
+    }
+    // term_destroy(loc);
+    *loc = r;
+    term_add_arg_sort_unique(results, new);
+  }
+}
 
 /*!
  * Check that rules are well formed.
@@ -75,6 +141,59 @@ static void term_rewrite_rule(term t_whole, term t_current, term pattern,
  *
  * Should be used for assert only
  */
-static bool rules_are_well_formed(term t) { return false; }
+static bool rules_are_well_formed(term t) { return true; }
 
-term term_rewrite(term t) { return NULL; }
+term term_rewrite(term t) {
+  assert(rules_are_well_formed(t));
+  // Here I suppose the rule is well formed
+  int factor = 1;
+  term firstArgument = term_get_argument(t, 0);
+  if (!term_is_variable(firstArgument) && term_get_arity(firstArgument) == 0) {
+    sstring_is_integer(term_get_symbol(firstArgument), &factor);
+  }
+  term termToRewrite = term_get_argument(t, term_get_arity(t) - 1);
+  sstring string_result = sstring_create_string(symbol_results);
+  term results = term_create(string_result);
+  sstring_destroy(&string_result);
+  term_argument_traversal rewriteTraversal = term_argument_traversal_create(t);
+
+  if (factor > 1) {
+    term_argument_traversal_get_next(rewriteTraversal);
+  }
+
+  while (term_argument_traversal_has_next(rewriteTraversal)) {
+    term rule = term_argument_traversal_get_next(rewriteTraversal);
+    if (!term_argument_traversal_has_next(rewriteTraversal)) {
+      break;
+    }
+    term termToReplace = term_get_argument(rule, 0);
+    term replaceWith = term_get_argument(rule, 1);
+    term_argument_traversal args =
+        term_argument_traversal_create(termToRewrite);
+    while (term_argument_traversal_has_next(args)) {
+      term_rewrite_rule(termToRewrite, term_argument_traversal_get_next(args),
+                        termToReplace, replaceWith, results);
+    }
+    sstring string_result = sstring_create_string(symbol_results);
+    term newResults = term_create(string_result);
+    for (size_t i = 1; i < factor; i++) {
+      term_argument_traversal argsToRewrite =
+          term_argument_traversal_create(results);
+      while (term_argument_traversal_has_next(argsToRewrite)) {
+        term termToRewrite = term_argument_traversal_get_next(argsToRewrite);
+        term_argument_traversal args =
+            term_argument_traversal_create(termToRewrite);
+        while (term_argument_traversal_has_next(args)) {
+          term_rewrite_rule(termToRewrite,
+                            term_argument_traversal_get_next(args),
+                            termToReplace, replaceWith, newResults);
+        }
+      }
+      // term_destroy(results);
+      results = term_copy(newResults);
+      // term_destroy(newResults);
+      newResults = term_create(string_result);
+    }
+  }
+  return results;
+}

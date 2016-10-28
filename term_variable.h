@@ -37,6 +37,15 @@
 extern bool term_is_variable(term t);
 
 /*!
+ * Replace the term if is the variable by its value.
+ * Each time value is copied.
+ * The terms is modified according to the replacement.
+ * \pre variable is a legal name of variable
+ * \pre t and value are correct
+ */
+extern void term_replace_if_variable(term t, sstring variable, term value);
+
+/*!
  * Replace all occurence of a variable by its value.
  * Each time value is copied.
  * The initial terms is modified according to the replacement.

@@ -53,12 +53,14 @@ sstring sstring_create_string(char const *st) {
 }
 
 void sstring_destroy(sstring *ss) {
-  assert(NULL != ss);
-  ASSERT_SSTRING_OK((*ss));
-  // NB free ( NULL ) is legal
-  free((*ss)->chars);
-  free(*ss);
-  *ss = NULL;
+  // assert(NULL != ss);
+  if (ss != NULL) {
+    // ASSERT_SSTRING_OK((*ss));
+    // NB free ( NULL ) is legal
+    free((*ss)->chars);
+    free(*ss);
+    *ss = NULL;
+  }
 }
 
 void sstring_print(sstring ss, FILE *f) {
