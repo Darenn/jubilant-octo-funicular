@@ -61,7 +61,6 @@ static void test_sstring_println_st_ss(char const *const st, sstring ss) {
   assert(NULL != st);
   assert(NULL != ss);
   puts("---------------");
-
   fprintf(stdout, "\"%s\"\n", st);
   test_sstring_println(ss);
 }
@@ -110,6 +109,7 @@ static void test_sstring_compare(char const *const st1, char const *const st2) {
 static void test_sstring(char const *const st1, char const *const st2) {
   assert(NULL != st1);
   assert(NULL != st2);
+
   sstring ss1 = sstring_create_string(st1);
   assert(NULL != ss1);
   test_sstring_println_st_ss(st1, ss1);
@@ -164,6 +164,7 @@ static void test_sstring(char const *const st1, char const *const st2) {
  * C-string.
  */
 int main(void) {
+
   test_sstring("roudoudou", "unfzer_5\tdf");
   test_sstring("roudoudou", "");
   test_sstring("", "unfzer_5\tdf");

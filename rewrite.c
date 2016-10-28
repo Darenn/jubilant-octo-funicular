@@ -176,7 +176,7 @@ term term_rewrite(term t) {
     }
     sstring string_result = sstring_create_string(symbol_results);
     term newResults = term_create(string_result);
-    for (size_t i = 1; i < factor; i++) {
+    for (int i = 1; i < factor; i++) {
       term_argument_traversal argsToRewrite =
           term_argument_traversal_create(results);
       while (term_argument_traversal_has_next(argsToRewrite)) {

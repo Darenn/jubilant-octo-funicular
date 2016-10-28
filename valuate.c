@@ -29,22 +29,24 @@ typedef struct variable_definition_list_struct {
  */
 static sstring ss_set = NULL;
 
-static void destroyVDL(variable_definition_list *ls) {
+static void pop_variable(variable_definition_list *ls) {
+  assert(ls != NULL);
   if (*ls != NULL) {
     term_destroy(&((*ls)->value));
     sstring_destroy(&((*ls)->variable));
-    destroyVDL(&(*ls)->next);
+    variable_definition_list next = (*ls)->next;
     free(*ls);
+    *ls = next;
   }
 }
-static variable_definition_list pushBackVDL(variable_definition_list ls,
-                                            sstring variable, term value) {
+static void push_back_variable(variable_definition_list *ls, sstring variable,
+                               term value) {
   variable_definition_list ils = (variable_definition_list)malloc(
       sizeof(struct variable_definition_list_struct));
   ils->value = term_copy(value);
   ils->variable = sstring_copy(variable);
-  ils->next = ls;
-  return ils;
+  ils->next = *ls;
+  *ls = ils;
 }
 
 static bool term_is_set(term t) {
@@ -59,22 +61,25 @@ static bool term_is_set(term t) {
  * \param t_res valuated variable stack (list of active variables).
  */
 static term term_valuate_inner(term t, variable_definition_list var_list) {
+  assert(t != NULL);
   if (term_is_set(t)) {
     term variable = term_extract_argument(t, 0);
     term value = term_extract_argument(t, 0);
     term arg = term_extract_argument(t, 0);
 
-    var_list = pushBackVDL(var_list, term_get_symbol(variable), value);
+    push_back_variable(&var_list, term_get_symbol(variable), value);
 
     term_destroy(&variable);
     term_destroy(&value);
 
     t = term_valuate_inner(arg, var_list);
+
+    pop_variable(&var_list);
   }
 
   variable_definition_list tmp = var_list;
   while (tmp != NULL) {
-    term_replace_variable(t, tmp->variable, tmp->value);
+    term_replace_if_variable(t, tmp->variable, tmp->value);
     tmp = tmp->next;
   }
 
@@ -84,7 +89,6 @@ static term term_valuate_inner(term t, variable_definition_list var_list) {
     term_add_argument_position(t, arg, i);
   }
 
-  destroyVDL(&var_list);
   return t;
 }
 
@@ -94,7 +98,6 @@ term term_valuate(term t) {
   ss_set = sstring_create_string(symbol_set);
   variable_definition_list va_list = NULL;
   t_copy = term_valuate_inner(t_copy, va_list);
-  destroyVDL(&va_list);
   sstring_destroy(&ss_set);
   return t_copy;
 }
