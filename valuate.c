@@ -41,12 +41,12 @@ static void pop_variable(variable_definition_list *ls) {
 }
 static void push_back_variable(variable_definition_list *ls, sstring variable,
                                term value) {
-  variable_definition_list ils = (variable_definition_list)malloc(
+  variable_definition_list vdl = (variable_definition_list)malloc(
       sizeof(struct variable_definition_list_struct));
-  ils->value = term_copy(value);
-  ils->variable = sstring_copy(variable);
-  ils->next = *ls;
-  *ls = ils;
+  vdl->value = term_copy(value);
+  vdl->variable = sstring_copy(variable);
+  vdl->next = *ls;
+  *ls = vdl;
 }
 
 static bool term_is_set(term t) {
@@ -71,18 +71,17 @@ static term term_valuate_inner(term t, variable_definition_list var_list) {
 
     term_destroy(&variable);
     term_destroy(&value);
-
+    term_destroy(&t);
     t = term_valuate_inner(arg, var_list);
 
     pop_variable(&var_list);
   }
 
-  variable_definition_list tmp = var_list;
-  while (tmp != NULL) {
-    term_replace_if_variable(t, tmp->variable, tmp->value);
-    tmp = tmp->next;
+  variable_definition_list vdl = var_list;
+  while (vdl != NULL) {
+    term_replace_if_variable(t, vdl->variable, vdl->value);
+    vdl = vdl->next;
   }
-
   for (int i = 0; i < term_get_arity(t); i++) {
     term tmp = term_extract_argument(t, i);
     term arg = term_valuate_inner(tmp, var_list);
