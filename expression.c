@@ -87,11 +87,13 @@ int expression_valuate_inner(term t) {
       res -= arg_res[i];
     }
   } else if (sstring_compare(s, product) == 0) {
+    res = 1;
     for (int i = 0; i < term_get_arity(t); i++) {
       res *= arg_res[i];
     }
   } else if (sstring_compare(s, divided) == 0) {
-    for (int i = 0; i < term_get_arity(t); i++) {
+    res = arg_res[0];
+    for (int i = 1; i < term_get_arity(t); i++) {
       res /= arg_res[i];
     }
   } else if (sstring_compare(s, and) == 0) {

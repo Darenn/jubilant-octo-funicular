@@ -173,7 +173,7 @@ ARCHIVE_NAME := PASD_mini-projet.tgz
 ARCHIVE_FILES := Makefile *.c *.h compte-rendu.pdf
 
 # à compléter si pour inclure d'autres fichiers
-ARCHIVE_OTHER_FILES := DATA/Terms/t_expression_0.term DATA/Results_Expected/test_expression
+ARCHIVE_OTHER_FILES := DATA/Results_Expected/test_expression DATA/Terms/t_expression_0.term DATA/Terms/t_expression_1.term
 
 
 archive :
