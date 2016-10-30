@@ -12,10 +12,12 @@ int main(void) {
   term t = term_scan(in);
 
   term_print_compact(t, stdout);
+  printf("\n");
   fprintf(stdout, "%d", expression_valuate(t));
   printf("\n");
 
   term_destroy(&t);
+  fclose(in);
 
   return 0;
 }

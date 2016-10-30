@@ -4,7 +4,6 @@
 #include <stdio.h>
 
 #include "term.h"
-#include "term_io.h"
 #include "term_variable.h"
 
 /*! \file
