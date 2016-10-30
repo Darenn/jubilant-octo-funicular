@@ -14,6 +14,8 @@ static char const *const symbol_divided = "/";
 static char const *const symbol_and = "&&";
 static char const *const symbol_or = "||";
 static char const *const symbol_not = "!";
+static char const *const symbol_bool_T = "true";
+static char const *const symbol_bool_F = "false";
 
 static int const nb_symbols = 7;
 static char const *const symbols[] = {"+", "-", "*", "/", "&&", "||", "!"};
@@ -33,6 +35,21 @@ static bool symbol_is_valid(term t) {
   return res;
 }
 
+/* Check if symbol is a boolean
+ * \return true if symbol is a boolean
+ */
+static bool symbol_is_boolean(sstring s) {
+  sstring T = sstring_create_string(symbol_bool_T);
+  sstring F = sstring_create_string(symbol_bool_F);
+
+  bool res = (sstring_compare(s, T) == 0) || (sstring_compare(s, F) == 0);
+
+  sstring_destroy(&T);
+  sstring_destroy(&F);
+
+  return res;
+}
+
 bool term_is_valid_expression(term t) {
   assert(t != NULL);
 
@@ -40,7 +57,7 @@ bool term_is_valid_expression(term t) {
   bool res = false;
   int i = 0;
 
-  if (symbol_is_valid(t) || sstring_is_integer(s, &i)) {
+  if (symbol_is_valid(t) || sstring_is_integer(s, &i) || symbol_is_boolean(s)) {
     res = true;
     term_argument_traversal tat = term_argument_traversal_create(t);
     while (term_argument_traversal_has_next(tat)) {
@@ -62,6 +79,7 @@ sstring divided;
 sstring and;
 sstring or ;
 sstring not;
+sstring T;
 
 /* Return valuate term */
 int expression_valuate_inner(term t) {
@@ -72,6 +90,14 @@ int expression_valuate_inner(term t) {
   int res = 0;
   if (sstring_is_integer(s, &res))
     return res;
+
+  if (symbol_is_boolean(s)) {
+    if (sstring_compare(s, T) == 0) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
 
   int arg_res[term_get_arity(t)];
   for (int i = 0; i < term_get_arity(t); i++) {
@@ -123,6 +149,7 @@ int expression_valuate(term t) {
   and = sstring_create_string(symbol_and);
   or = sstring_create_string(symbol_or);
   not = sstring_create_string(symbol_not);
+  T = sstring_create_string(symbol_bool_T);
 
   int res = expression_valuate_inner(t);
 
@@ -133,6 +160,7 @@ int expression_valuate(term t) {
   sstring_destroy(&and);
   sstring_destroy(& or);
   sstring_destroy(&not);
+  sstring_destroy(&T);
 
   return res;
 }
