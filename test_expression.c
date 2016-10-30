@@ -20,5 +20,6 @@ static void test_file(char const *const file_name) {
 int main(void) {
   test_file("DATA/Terms/t_expression_0.term");
   test_file("DATA/Terms/t_expression_1.term");
+  test_file("DATA/Terms/t_expression_2.term");
   return 0;
 }
