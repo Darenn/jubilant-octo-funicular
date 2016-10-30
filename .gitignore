@@ -38,6 +38,7 @@ test_unify
 test_rewrite
 test_variable
 test_valuate
+test_expression
 
 DATA/Results/*
 PASD_mini-projet.tgz
