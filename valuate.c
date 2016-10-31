@@ -77,10 +77,10 @@ static term term_valuate_inner(term t, variable_definition_list var_list) {
     pop_variable(&var_list);
   }
 
-  variable_definition_list *vdl = &var_list;
-  while (*vdl != NULL) {
-    term_replace_if_variable(t, (*vdl)->variable, (*vdl)->value);
-    *vdl = (*vdl)->next;
+  variable_definition_list vdl = var_list;
+  while (vdl != NULL) {
+    term_replace_if_variable(t, vdl->variable, vdl->value);
+    vdl = vdl->next;
   }
   for (int i = 0; i < term_get_arity(t); i++) {
     term tmp = term_extract_argument(t, i);
