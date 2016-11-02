@@ -330,8 +330,11 @@ int term_compare(term t1, term t2) {
     if (compare == 0) {
       int i = 0;
       while (i < t1->arity && compare == 0) {
-        compare = sstring_compare(term_get_argument(t1, i)->symbol,
-                                  term_get_argument(t2, i)->symbol);
+        /*
+                compare = sstring_compare(term_get_argument(t1, i)->symbol,
+                                          term_get_argument(t2, i)->symbol);*/
+        compare =
+            term_compare(term_get_argument(t1, i), term_get_argument(t2, i));
         i++;
       }
     }
