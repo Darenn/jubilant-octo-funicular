@@ -100,7 +100,7 @@ sstring sstring_copy(sstring ss) {
     sstring res = malloc(sizeof(sstring_struct));
     assert(NULL != res);
     res->length = ss->length;
-    res->chars = malloc(res->length * sizeof(char));
+    res->chars = malloc(res->length * sizeof(char) + 1);
     assert(NULL != res->chars);
     for (unsigned int i = 0; i < res->length; i++) {
       res->chars[i] = ss->chars[i];
@@ -125,7 +125,6 @@ int sstring_compare(sstring ss1, sstring ss2) {
       }
       i++;
     } while (i < sstring_get_length(ss1) || i < sstring_get_length(ss2));
-
     return 0;
   } else if (sstring_is_empty(ss1) && !sstring_is_empty(ss2)) {
     return -1;

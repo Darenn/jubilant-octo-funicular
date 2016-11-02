@@ -1,5 +1,5 @@
 
-.PHONY : help compilation archive 
+.PHONY : help compilation archive
 
 SHELL := /bin/bash
 
@@ -7,7 +7,7 @@ SHELL := /bin/bash
 ## HELP
 ##
 
-help : 
+help :
 	@echo "Available:"
 	@echo "- compilation ==> compilation (should not produce any error nor warning)"
 	@echo "- test        ==> $(T_TEST__LIST) TV* TO*"
@@ -17,6 +17,8 @@ help :
 	@echo "  - m_term    => valgrind ./test_term"
 	@echo "  - t_variable    => make test with ./test_variable"
 	@echo "  - m_variable    => valgrind ./test_vatiable"
+	@echo "  - t_expression  => make test with ./test_expression"
+	@echo "  - m_expression  => valgrind ./test_expression"
 	@echo "  - TR% (% is a number) => test rewrite output on t_rerwite_%.term"
 	@echo "  - TR => test rewrite output on all t_rerwite_%.term"
 	@echo "  - MR% (% is a number) => test rewrite memory on t_rerwite_%.term"
@@ -33,7 +35,7 @@ help :
 ## MODULES
 ##
 
-MODULE := sstring term term_io term_variable valuate unify rewrite
+MODULE := sstring term term_io term_variable valuate unify rewrite expression
 
 
 ##
@@ -47,7 +49,7 @@ HEADERS := $(MODULE:%=%.h)
 ## TERMS
 ##
 
-TEST_PROGRAM := test_sstring test_term test_variable test_rewrite test_valuate test_unify
+TEST_PROGRAM := test_sstring test_term test_variable test_rewrite test_valuate test_unify test_expression
 
 
 ##
@@ -70,7 +72,7 @@ CFLAGS := -std=c99 -Wall -Wextra -pedantic -ggdb -lm $(C_FLAG_OFF_UNUSED)
 
 ## compilation rules
 
-./%.o : %.c $(HEADERS) 
+./%.o : %.c $(HEADERS)
 	$(CC) -c $(CFLAGS) -o $@ $<
 
 ./% : %.c $(MODULE:%=%.o) $(HEADERS)
@@ -84,7 +86,7 @@ CFLAGS := -std=c99 -Wall -Wextra -pedantic -ggdb -lm $(C_FLAG_OFF_UNUSED)
 ## Directory of for all data and results
 DATA_DIR := DATA
 
-## Directory of terms 
+## Directory of terms
 TERM_DIR := $(DATA_DIR)/Terms
 
 ## Directory to put generated results
@@ -101,7 +103,7 @@ VALGRIND_INVALID_READ := "Invalid read"
 VALGRIND_NO_MEMORY_LEAK_MESSAGE := "All heap blocks were freed -- no leaks are possible"
 
 
-## To 1) run 2) compare with expected 
+## To 1) run 2) compare with expected
 define TEST_T
 	@echo "==OUTPUT================ $(1) ====================="
 	$(1) > $(RESULTS_DIR)/$(2).output
@@ -165,16 +167,14 @@ M : m_test MR MU MV
 
 ##
 ## PRODUCE THE ARCHIVE (to umploaded on Celene)
-## 
+##
 
 ARCHIVE_NAME := PASD_mini-projet.tgz
 ARCHIVE_FILES := Makefile *.c *.h compte-rendu.pdf
 
 # à compléter si pour inclure d'autres fichiers
-ARCHIVE_OTHER_FILES :=
+ARCHIVE_OTHER_FILES := DATA/Results_Expected/test_expression DATA/Terms/t_expression_0.term DATA/Terms/t_expression_1.term  DATA/Terms/t_expression_2.term
 
 
 archive :
 	@tar czf $(ARCHIVE_NAME) $(ARCHIVE_FILES)
-
-

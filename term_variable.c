@@ -46,13 +46,14 @@ void term_replace_variable(term t, sstring variable, term value) {
   assert(t != NULL);
   assert(value != NULL);
   assert(variable_is_valide(variable));
-
-  term_replace_if_variable(t, variable, value);
-
-  term_argument_traversal tat = term_argument_traversal_create(t);
-  while (term_argument_traversal_has_next(tat)) {
-    term arg = term_argument_traversal_get_next(tat);
-    term_replace_variable(arg, variable, value);
+  if (sstring_compare(term_get_symbol(t), variable) == 0) {
+    term_replace_copy(t, value);
+  } else {
+    term_argument_traversal tat = term_argument_traversal_create(t);
+    while (term_argument_traversal_has_next(tat)) {
+      term arg = term_argument_traversal_get_next(tat);
+      term_replace_variable(arg, variable, value);
+    }
+    term_argument_traversal_destroy(&tat);
   }
-  term_argument_traversal_destroy(&tat);
 }

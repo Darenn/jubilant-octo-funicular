@@ -77,7 +77,7 @@ term term_scan(FILE *in) {
   if (EOF != sep) {
     // Get arguments
     term t = start;
-    while ((sep = get_next_separator(in)) != EOF) {
+    while ((sep = get_next_separator(in)) != EOF && t != NULL) {
       if (sep == ')') {
         t = term_get_father(t);
       } else if (sep == '(') {

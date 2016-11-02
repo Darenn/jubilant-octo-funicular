@@ -130,8 +130,8 @@ Functions</h2></td></tr>
 <tr class="separator:aa1463f65b2c118584b7b2924ec2c5501"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a619500b48e3211691390fa7a81f0fbd5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sstring_8c.html#a619500b48e3211691390fa7a81f0fbd5">sstring_get_length</a> (<a class="el" href="sstring_8h.html#a224b1883286c11691b59f792cc0a109e">sstring</a> ss)</td></tr>
 <tr class="separator:a619500b48e3211691390fa7a81f0fbd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6bf5464bbd6bc2ea595a94bdef94779c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sstring_8c.html#a6bf5464bbd6bc2ea595a94bdef94779c">sstring_get_char</a> (<a class="el" href="sstring_8h.html#a224b1883286c11691b59f792cc0a109e">sstring</a> ss, int i)</td></tr>
-<tr class="separator:a6bf5464bbd6bc2ea595a94bdef94779c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7317fdf7a4ab2155c9b3c2f9b8d72a0c"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sstring_8c.html#a7317fdf7a4ab2155c9b3c2f9b8d72a0c">sstring_get_char</a> (<a class="el" href="sstring_8h.html#a224b1883286c11691b59f792cc0a109e">sstring</a> ss, int i)</td></tr>
+<tr class="separator:a7317fdf7a4ab2155c9b3c2f9b8d72a0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aec3a5b9a574f998e171e63e02cc2f886"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sstring_8c.html#aec3a5b9a574f998e171e63e02cc2f886">sstring_is_integer</a> (<a class="el" href="sstring_8h.html#a224b1883286c11691b59f792cc0a109e">sstring</a> ss, int *n_pt)</td></tr>
 <tr class="separator:aec3a5b9a574f998e171e63e02cc2f886"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -149,7 +149,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">assert ( NULL != ss ) ;                     \</div><div class="line">  assert ( ( 0 == ss -&gt; length ) == ( NULL == ss -&gt; chars ) )</div></div><!-- fragment --><p>Used to test the validity in asserts </p>
+<b>Value:</b><div class="fragment"><div class="line">assert ( NULL != ss ) ;                 \</div><div class="line">  assert ( ( 0 == ss -&gt; length ) == ( NULL == ss -&gt; chars ) )</div></div><!-- fragment --><p>Used to test the validity in asserts </p>
 
 </div>
 </div>
@@ -197,19 +197,18 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Indicate how two <code>sstring</code> are ordered alphabetically.</p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>Indicate how two <code>sstring</code> are ordered, alphabetically. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">ss1</td><td><code>sstring</code> </td></tr>
-    <tr><td class="paramname">ss2</td><td><code>sstring</code> </td></tr>
+    <tr><td class="paramname">ss1</td><td><code>sstring</code> to compare. </td></tr>
+    <tr><td class="paramname">ss2</td><td><code>sstring</code> to compare. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section pre"><dt>Precondition</dt><dd>ss1 and ss2 are valid <code>sstring</code> (assert-ed) </dd></dl>
+<dl class="section pre"><dt>Precondition</dt><dd>ss1 and ss2 are valid <code>sstring</code>. </dd></dl>
 <dl class="section return"><dt>Returns</dt><dd><ul>
 <li>0 if ss1 == ss2 </li>
 <li>-1 if ss1 &lt; ss2 </li>
-<li>1 otherwise </li>
+<li>1 otherwise. </li>
 </ul>
 </dd></dl>
 
@@ -241,12 +240,12 @@ Functions</h2></td></tr>
 <p>Concatenate a <code>sstring</code> at the end of another.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">ss1</td><td><code>sstring</code> to be modified </td></tr>
-    <tr><td class="paramname">ss2</td><td><code>sstring</code> to concatenate to <code>ss1</code> </td></tr>
+    <tr><td class="paramname">ss1</td><td><code>sstring</code> to be modified. </td></tr>
+    <tr><td class="paramname">ss2</td><td><code>sstring</code> to concatenate to the end <code>ss1</code>. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section pre"><dt>Precondition</dt><dd><code>ss1</code> and <code>ss2</code> are valid <code>sstring</code> (assert-ed) </dd></dl>
+<dl class="section pre"><dt>Precondition</dt><dd><code>ss1</code> and <code>ss2</code> are valid <code>sstring</code>. </dd></dl>
 
 </div>
 </div>
@@ -266,12 +265,12 @@ Functions</h2></td></tr>
 <p>Provide a copy of a string.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">ss</td><td><code>sstring</code> to copy </td></tr>
+    <tr><td class="paramname">ss</td><td><code>sstring</code> to copy. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section pre"><dt>Precondition</dt><dd>ss is a valid <code>sstring</code> (assert-ed) </dd></dl>
-<dl class="section return"><dt>Returns</dt><dd>an independant copy of <code>ss</code> </dd></dl>
+<dl class="section pre"><dt>Precondition</dt><dd>ss is a valid <code>sstring</code>. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>an independant copy of <code>ss</code>. </dd></dl>
 
 </div>
 </div>
@@ -288,8 +287,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Generate an empty <code>sstring</code>.</p>
-<dl class="section return"><dt>Returns</dt><dd>an empty <code>sstring</code> </dd></dl>
+<p>Generate an empty <code>sstring</code>. </p><dl class="section return"><dt>Returns</dt><dd>an empty <code>sstring</code>. </dd></dl>
 
 </div>
 </div>
@@ -309,12 +307,12 @@ Functions</h2></td></tr>
 <p>Generate a <code>sstring</code> with the same <code>char</code> sequence as a C-string.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">st</td><td>C-string </td></tr>
+    <tr><td class="paramname">st</td><td>C-string. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section pre"><dt>Precondition</dt><dd>st is not <code>NULL</code> (assert-ed) </dd></dl>
-<dl class="section return"><dt>Returns</dt><dd>a sstring corresponding to st </dd></dl>
+<dl class="section pre"><dt>Precondition</dt><dd>st is not <code>NULL</code>. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>a sstring corresponding to st. </dd></dl>
 
 </div>
 </div>
@@ -334,20 +332,20 @@ Functions</h2></td></tr>
 <p>Destroy a <code>sstring</code> and release related resources.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">ss</td><td>(location of the) sstring to destroy </td></tr>
+    <tr><td class="paramname">ss</td><td>(location of the) sstring to destroy. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section pre"><dt>Precondition</dt><dd>ss is a valid <code>sstring</code> (assert-ed) </dd></dl>
+<dl class="section pre"><dt>Precondition</dt><dd>ss is a valid <code>sstring</code>. </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a6bf5464bbd6bc2ea595a94bdef94779c"></a>
+<a class="anchor" id="a7317fdf7a4ab2155c9b3c2f9b8d72a0c"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int sstring_get_char </td>
+          <td class="memname">char sstring_get_char </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="sstring_8h.html#a224b1883286c11691b59f792cc0a109e">sstring</a>&#160;</td>
           <td class="paramname"><em>ss</em>, </td>
@@ -365,19 +363,19 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Return the ith char in the sstring. Char are numbered from 0</p>
+<p>Return the <code>i</code> th char of a <code>sstring</code>. Character positions are numbered from 0.</p>
 <p>This function has no side effect and can be safely used in asserts.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">ss</td><td><code>sstring</code> to query </td></tr>
-    <tr><td class="paramname">i</td><td>position of the wanted char </td></tr>
+    <tr><td class="paramname">ss</td><td><code>sstring</code> to query. </td></tr>
+    <tr><td class="paramname">i</td><td>position of the wanted char. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section pre"><dt>Precondition</dt><dd>ss is a valid <code>sstring</code> (assert-ed) </dd>
+<dl class="section pre"><dt>Precondition</dt><dd>ss is a valid <code>sstring</code>. </dd>
 <dd>
-i is a valid position (assert-ed) </dd></dl>
-<dl class="section return"><dt>Returns</dt><dd>ith char of the string </dd></dl>
+i is a valid position. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><code>i</code> th char of the string. </dd></dl>
 
 </div>
 </div>
@@ -398,12 +396,12 @@ i is a valid position (assert-ed) </dd></dl>
 <p>This function has no side effect and can be safely used in asserts.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">ss</td><td><code>sstring</code> to query </td></tr>
+    <tr><td class="paramname">ss</td><td><code>sstring</code> to query. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section pre"><dt>Precondition</dt><dd>ss is a valid <code>sstring</code> (assert-ed) </dd></dl>
-<dl class="section return"><dt>Returns</dt><dd>length of the string </dd></dl>
+<dl class="section pre"><dt>Precondition</dt><dd>ss is a valid <code>sstring</code>. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>length of the string. </dd></dl>
 
 </div>
 </div>
@@ -424,12 +422,12 @@ i is a valid position (assert-ed) </dd></dl>
 <p>This function has no side effect and can be safely used in asserts.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">ss</td><td><code>sstring</code> to test </td></tr>
+    <tr><td class="paramname">ss</td><td><code>sstring</code> to test. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section pre"><dt>Precondition</dt><dd>ss is a valid <code>sstring</code> (assert-ed) </dd></dl>
-<dl class="section return"><dt>Returns</dt><dd>true ssi <code>ss</code> is empty </dd></dl>
+<dl class="section pre"><dt>Precondition</dt><dd>ss is a valid <code>sstring</code>. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>true ssi <code>ss</code> is empty. </dd></dl>
 
 </div>
 </div>
@@ -456,7 +454,7 @@ i is a valid position (assert-ed) </dd></dl>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Test whether the sstring repreent a positive integer in decimal notation. If true, then the value is stored in *n_pt</p>
+<p>Test whether the sstring repreent a positive integer in decimal notation. If true, then the value is stored in <code>*n_pt</code>.</p>
 <p>This function has no side effect and can be safely used in asserts.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -465,7 +463,7 @@ i is a valid position (assert-ed) </dd></dl>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>true if the sstring represent a decimal writing of a positive integer </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the sstring represent a decimal writing of a positive integer. </dd></dl>
 
 </div>
 </div>
@@ -495,21 +493,21 @@ i is a valid position (assert-ed) </dd></dl>
 <p>Print a <code>sstring</code> to a stream. There is no line return (unless it is contained in <code>ss</code>).</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">ss</td><td><code>sstring</code> to print </td></tr>
-    <tr><td class="paramname">f</td><td>stream to print to </td></tr>
+    <tr><td class="paramname">ss</td><td><code>sstring</code> to print. </td></tr>
+    <tr><td class="paramname">f</td><td>stream to print to. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section pre"><dt>Precondition</dt><dd>ss is a valid <code>sstring</code> (assert-ed) </dd>
+<dl class="section pre"><dt>Precondition</dt><dd>ss is a valid <code>sstring</code>. </dd>
 <dd>
-f is not <code>NULL</code> (assert-ed) </dd></dl>
+f is not <code>NULL</code>. </dd></dl>
 
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Oct 10 2016 17:53:45 for My Project by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sun Oct 16 2016 09:07:00 for My Project by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.11
 </small></address>
