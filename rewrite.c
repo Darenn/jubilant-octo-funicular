@@ -44,22 +44,23 @@ static bool term_is_pattern(term t, term pattern, term affectation) {
   }
   if (term_compare(t, pattern) == 0) {
     return true;
-  }
-  term_argument_traversal ttraversal = term_argument_traversal_create(t);
-  term_argument_traversal patternTraversal =
-      term_argument_traversal_create(pattern);
-  while (term_argument_traversal_has_next(ttraversal)) {
-    if (!term_argument_traversal_has_next(patternTraversal)) {
-      return false;
-    }
-    term current_t = term_argument_traversal_get_next(ttraversal);
-    term current_pattern = term_argument_traversal_get_next(patternTraversal);
-    if (!term_is_pattern(current_t, current_pattern, affectation)) {
-      return false;
-    }
-  }
-  term_argument_traversal_destroy(&ttraversal);
-  term_argument_traversal_destroy(&patternTraversal);
+  } /*
+     term_argument_traversal ttraversal = term_argument_traversal_create(t);
+     term_argument_traversal patternTraversal =
+         term_argument_traversal_create(pattern);
+     while (term_argument_traversal_has_next(ttraversal)) {
+       if (!term_argument_traversal_has_next(patternTraversal)) {
+         return false;
+       }
+       term current_t = term_argument_traversal_get_next(ttraversal);
+       term current_pattern =
+   term_argument_traversal_get_next(patternTraversal);
+       if (!term_is_pattern(current_t, current_pattern, affectation)) {
+         return false;
+       }
+   }
+     term_argument_traversal_destroy(&ttraversal);
+     term_argument_traversal_destroy(&patternTraversal);*/
   if (term_compare(t, pattern) != 0) {
     return false;
   }
@@ -78,6 +79,8 @@ static void term_add_arg_sort_unique(term t, term arg) {
   int arity = term_get_arity(t);
   for (int i = 0; i < arity; i++) {
     if (term_compare(arg, term_get_argument(t, i)) == 0) {
+      // destroy the term ?
+      term_destroy(&arg);
       return;
     }
     if (term_compare(arg, term_get_argument(t, i)) < 0) {
@@ -86,6 +89,20 @@ static void term_add_arg_sort_unique(term t, term arg) {
     }
   }
   term_add_argument_last(t, arg);
+}
+
+term term_copy_replace_at_loc(term t, term r, term *loc) {
+  term new = term_create(term_get_symbol(t));
+  for (int i = 0; i < term_get_arity(t); i++) {
+    term arg = term_get_argument(t, i);
+    // term copyarg = term_copy(arg);
+    if (*loc == arg) {
+      term_add_argument_last(new, r);
+    } else {
+      term_add_argument_last(new, term_copy_replace_at_loc(arg, r, loc));
+    }
+  }
+  return new;
 }
 
 /*!
@@ -115,9 +132,10 @@ static void term_rewrite_rule(term t_whole, term t_current, term pattern,
       term_replace_variable(r, term_get_symbol(variable),
                             term_get_argument(variable, 0));
     }
+    // Je dois checker dans les arguments aussi
     term *loc = &t_current;
-    // term copy = term_copy_translate_position(t_whole, loc);
-    term new = term_create(term_get_symbol(t_whole));
+    term copy = term_copy_replace_at_loc(t_whole, r, loc);
+    /*term new = term_create(term_get_symbol(t_whole));
     for (int i = 0; i < term_get_arity(t_whole); i++) {
       term arg = term_get_argument(t_whole, i);
       term copyarg = term_copy(arg);
@@ -126,10 +144,19 @@ static void term_rewrite_rule(term t_whole, term t_current, term pattern,
       } else {
         term_add_argument_last(new, copyarg);
       }
-    }
+  }*/
     // term_destroy(loc);
-    *loc = r;
-    term_add_arg_sort_unique(results, new);
+    //*loc = r;
+    term_add_arg_sort_unique(results, copy);
+  } else {
+    term_argument_traversal t_current_traversal =
+        term_argument_traversal_create(t_current);
+    while (term_argument_traversal_has_next(t_current_traversal)) {
+      term_rewrite_rule(t_whole,
+                        term_argument_traversal_get_next(t_current_traversal),
+                        pattern, replace, results);
+    }
+    term_argument_traversal_destroy(&t_current_traversal);
   }
 }
 
