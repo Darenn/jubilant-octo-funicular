@@ -324,6 +324,8 @@ void term_replace_copy(term t_loc, term t_src) {
 }
 
 int term_compare(term t1, term t2) {
+  assert(t1 != NULL);
+  assert(t2 != NULL);
   int compare = sstring_compare(t1->symbol, t2->symbol);
   if (compare == 0) {
     compare = t1->arity - t2->arity;
