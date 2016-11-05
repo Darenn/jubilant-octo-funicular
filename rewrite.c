@@ -250,7 +250,35 @@ static void term_rewrite_rule(term t_whole, term t_current, term pattern,
  *
  * Should be used for assert only
  */
-static bool rules_are_well_formed(term t) { return true; }
+static bool rules_are_well_formed(term t) {
+  sstring s_rewrite = sstring_create_string(symbol_rewrite);
+  assert(sstring_compare(term_get_symbol(t), s_rewrite) == 0);
+  sstring_destroy(&s_rewrite);
+  bool hasFactor = false;
+  int factor = 1;
+  term firstArgument = term_get_argument(t, 0);
+  if (!term_is_variable(firstArgument) && term_get_arity(firstArgument) == 0) {
+    sstring_is_integer(term_get_symbol(firstArgument), &factor);
+    hasFactor = true;
+  }
+  int startIndex;
+  if (hasFactor) {
+    startIndex = 1;
+  } else {
+    startIndex = 0;
+  }
+  sstring s_rule = sstring_create_string(symbol_rule);
+  for (int i = startIndex; i < term_get_arity(t) - 1; i++) {
+    assert(sstring_compare(term_get_symbol(term_get_argument(t, i)), s_rule) ==
+           0);
+    assert(term_get_arity(term_get_argument(t, i)) == 2);
+  }
+  assert(sstring_compare(
+             term_get_symbol(term_get_argument(t, term_get_arity(t) - 1)),
+             s_rule) != 0);
+  sstring_destroy(&s_rule);
+  return true;
+}
 
 term term_rewrite(term t) {
   assert(rules_are_well_formed(t));
