@@ -19,6 +19,8 @@ help :
 	@echo "  - m_variable    => valgrind ./test_vatiable"
 	@echo "  - t_expression  => make test with ./test_expression"
 	@echo "  - m_expression  => valgrind ./test_expression"
+	@echo "  - t_peano  => make test with ./test_peano"
+	@echo "  - m_peano  => valgrind ./test_peano"
 	@echo "  - TR% (% is a number) => test rewrite output on t_rerwite_%.term"
 	@echo "  - TR => test rewrite output on all t_rerwite_%.term"
 	@echo "  - MR% (% is a number) => test rewrite memory on t_rerwite_%.term"
@@ -35,12 +37,12 @@ help :
 ## MODULES
 ##
 
-MODULE := sstring term term_io term_variable valuate unify rewrite expression
+MODULE := sstring term term_io term_variable valuate unify rewrite expression peano
 
 
 ##
 ## HEADER FILES
-##
+##expression
 
 HEADERS := $(MODULE:%=%.h)
 
@@ -49,7 +51,7 @@ HEADERS := $(MODULE:%=%.h)
 ## TERMS
 ##
 
-TEST_PROGRAM := test_sstring test_term test_variable test_rewrite test_valuate test_unify test_expression
+TEST_PROGRAM := test_sstring test_term test_variable test_rewrite test_valuate test_unify test_expression test_peano
 
 
 ##
@@ -174,7 +176,7 @@ ARCHIVE_FILES := Makefile *.c *.h compte-rendu.pdf
 
 # à compléter si pour inclure d'autres fichiers
 ARCHIVE_OTHER_FILES := DATA/Results_Expected/test_expression DATA/Terms/t_expression_0.term DATA/Terms/t_expression_1.term  DATA/Terms/t_expression_2.term
-
+ARCHIVE_OTHER_FILES := DATA/Results_Expected/test_peano DATA/Terms/t_peano_0.term DATA/Terms/t_peano_1.term
 
 archive :
 	@tar czf $(ARCHIVE_NAME) $(ARCHIVE_FILES)

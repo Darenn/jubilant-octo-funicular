@@ -378,3 +378,7 @@ term term_argument_traversal_get_next(term_argument_traversal tt) {
   tt->tls = tt->tls->next;
   return t;
 }
+void term_set_symbol(term t, sstring symbol) {
+  sstring_destroy(&t->symbol);
+  t->symbol = sstring_copy(symbol);
+}

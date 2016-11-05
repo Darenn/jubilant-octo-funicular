@@ -222,5 +222,5 @@ extern bool term_argument_traversal_has_next(term_argument_traversal tt);
  * \return next argument.
  */
 extern term term_argument_traversal_get_next(term_argument_traversal tt);
-
+extern void term_set_symbol(term t, sstring symbol);
 #endif
