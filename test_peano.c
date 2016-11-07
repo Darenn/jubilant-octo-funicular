@@ -9,7 +9,6 @@
 static void test_file(char const *const file_name) {
   FILE *in = fopen(file_name, "r");
   term t = term_scan(in);
-  // term_print_compact(t, stdout);
   term t_copy = peano_valuate(t);
   term_print_compact(t_copy, stdout);
   printf("\n");

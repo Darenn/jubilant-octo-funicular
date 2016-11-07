@@ -159,9 +159,9 @@ m_% : ./test_%
 
 
 ## TEST basic
-t_test : t_sstring t_term t_variable
+t_test : t_sstring t_term t_variable t_expression t_peano
 
-m_test : m_sstring m_term m_variable
+m_test : m_sstring m_term m_variable m_expression m_peano
 
 T : t_test TR TU TV
 M : m_test MR MU MV
@@ -175,8 +175,7 @@ ARCHIVE_NAME := PASD_mini-projet.tgz
 ARCHIVE_FILES := Makefile *.c *.h compte-rendu.pdf
 
 # à compléter si pour inclure d'autres fichiers
-ARCHIVE_OTHER_FILES := DATA/Results_Expected/test_expression DATA/Terms/t_expression_0.term DATA/Terms/t_expression_1.term  DATA/Terms/t_expression_2.term
-ARCHIVE_OTHER_FILES := DATA/Results_Expected/test_peano DATA/Terms/t_peano_0.term DATA/Terms/t_peano_1.term
+ARCHIVE_OTHER_FILES := DATA/Results_Expected/test_expression DATA/Terms/t_expression_0.term DATA/Terms/t_expression_1.term  DATA/Terms/t_expression_2.term DATA/Results_Expected/test_peano DATA/Terms/t_peano_0.term DATA/Terms/t_peano_1.term
 
 archive :
 	@tar czf $(ARCHIVE_NAME) $(ARCHIVE_FILES)

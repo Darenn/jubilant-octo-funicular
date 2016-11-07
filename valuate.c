@@ -28,7 +28,10 @@ typedef struct variable_definition_list_struct {
  * term_valuate_inner
  */
 static sstring ss_set = NULL;
-
+/*!
+ * pop variable of a list function
+ * \param ls pointer on a variable stack being reduced.
+ */
 static void pop_variable(variable_definition_list *ls) {
   assert(ls != NULL);
   if (*ls != NULL) {
@@ -39,6 +42,12 @@ static void pop_variable(variable_definition_list *ls) {
     *ls = next;
   }
 }
+/*!
+ * push back in a list function
+ * \param ls pointer on a variable stack being modified.
+ * \param  variable sstring variable to add in the stack
+ * \param  value term variable to add in the stack
+ */
 static void push_back_variable(variable_definition_list *ls, sstring variable,
                                term value) {
   variable_definition_list vdl = (variable_definition_list)malloc(
@@ -48,7 +57,11 @@ static void push_back_variable(variable_definition_list *ls, sstring variable,
   vdl->next = *ls;
   *ls = vdl;
 }
-
+/*!
+ * term is set function
+ * \param t term to check
+ * \return bool to know if term is a right set
+ */
 static bool term_is_set(term t) {
   return (sstring_compare(term_get_symbol(t), ss_set) == 0) &&
          (term_get_arity(t) == 3) &&
