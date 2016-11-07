@@ -50,18 +50,23 @@ static term peano_compare(term t) {
   if (sstring_compare(term_get_symbol(t), symbol_if) == 0) {
     term first = term_get_argument(t, 0);
     if (sstring_compare(term_get_symbol(first), symbol_zero) == 0) {
-      term_replace_copy(term_get_argument(t, 1), first);
+      term tmp = term_copy(term_get_argument(t, 1));
+      term_destroy(&t);
+      t = term_copy(tmp);
+      term_destroy(&tmp);
     } else {
-      term_replace_copy(term_get_argument(t, 2), first);
+      term tmp = term_copy(term_get_argument(t, 2));
+      term_destroy(&t);
+      t = term_copy(tmp);
+      term_destroy(&tmp);
     }
-    term_argument_traversal tat = term_argument_traversal_create(t);
-    while (term_argument_traversal_has_next(tat)) {
-      term tmp = term_argument_traversal_get_next(tat);
-      peano_valuate_inner(tmp);
-    }
-    term_argument_traversal_destroy(&tat);
-    return t;
   }
+  term_argument_traversal tat = term_argument_traversal_create(t);
+  while (term_argument_traversal_has_next(tat)) {
+    term tmp = term_argument_traversal_get_next(tat);
+    peano_compare(tmp);
+  }
+  term_argument_traversal_destroy(&tat);
   return t;
 }
 /*!
@@ -80,15 +85,21 @@ term peano_valuate(term t) {
   assert(t != NULL);
   symbol_if = sstring_create_string("if");
   symbol_zero = sstring_create_string("0");
-  int val = expression_valuate(t);
+  term t_copy = term_copy(t);
+  t_copy = peano_compare(t_copy);
+
+  int val = expression_valuate(t_copy);
+  term_destroy(&t_copy);
   char *char_symbol = int_to_pchar(val);
   sstring symbol = sstring_create_string(char_symbol);
-  term t_copy = term_create(symbol);
-  t_copy = peano_compare(t_copy);
+  t_copy = term_create(symbol);
+
   peano_valuate_inner(t_copy);
+
   sstring_destroy(&symbol);
   sstring_destroy(&symbol_if);
   sstring_destroy(&symbol_zero);
   free(char_symbol);
+
   return t_copy;
 }
